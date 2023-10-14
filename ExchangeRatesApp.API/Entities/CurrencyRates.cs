@@ -2,9 +2,9 @@
 {
     public class CurrencyRates
     {
-            public string table { get; set; }
-            public string no { get; set; }
-            public string effectiveDate { get; set; }
-            public List<Rate> rates { get; set; }
+            public string Table { get; set; } = string.Empty;
+            public string No { get; set; } = string.Empty;
+            public string EffectiveDate { get; set; } = string.Empty;
+            public List<Rate> Rates { get; set; } = new List<Rate>();
     }
 }
