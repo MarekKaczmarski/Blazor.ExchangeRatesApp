@@ -13,9 +13,9 @@ namespace ExchangeRatesApp.API.Repository
             _httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
         }
 
-        public async Task<List<CurrencyRates>> GetAllCurrencies()
+        public async Task<List<CurrencyRates>> GetAllCurrencies(string table)
         {
-            var response = await _httpClient.GetAsync("api/exchangerates/tables/a/");
+            var response = await _httpClient.GetAsync($"api/exchangerates/tables/{table}/");
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadFromJsonAsync<List<CurrencyRates>>();
@@ -29,7 +29,28 @@ namespace ExchangeRatesApp.API.Repository
 
         public async Task<Rate?> GetCurrencyByCode(string code)
         {
-            var currencyRates = await GetAllCurrencies();
+            var tables = new List<string> { "a", "b", "c" }; // Add all the table letters you want to query
+
+            foreach (var table in tables)
+            {
+                var currencyRates = await GetAllCurrencies(table);
+
+                var specificCurrency = currencyRates
+                    .SelectMany(cr => cr.Rates)
+                    .FirstOrDefault(rate => rate.Code == code);
+
+                if (specificCurrency != null)
+                {
+                    return specificCurrency;
+                }
+            }
+
+            return null; // Return null if the currency is not found in any table
+        }
+
+        public async Task<Rate?> GetCurrencyByCode(string table, string code)
+        {
+            var currencyRates = await GetAllCurrencies(table);
 
             var specificCurrency = currencyRates
                 .SelectMany(cr => cr.Rates)
