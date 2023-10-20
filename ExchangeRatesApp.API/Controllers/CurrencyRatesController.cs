@@ -34,8 +34,8 @@ namespace ExchangeRatesApp.API.Controllers
         //    return BadRequest("Failed to retrieve currency rates.");
         //}
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllCurrencies()
+        [HttpGet("all-currencies/{table}")]
+        public async Task<IActionResult> GetAllCurrencies(string table)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace ExchangeRatesApp.API.Controllers
             }
         }
 
-        [HttpGet("{code}")]
+        [HttpGet("currency-by-code/{code}")]
         public async Task<IActionResult> GetCurrencyByCode(string code)
         {
             try
