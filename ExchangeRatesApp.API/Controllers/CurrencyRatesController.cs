@@ -39,7 +39,7 @@ namespace ExchangeRatesApp.API.Controllers
         {
             try
             {
-                var currencyRates = await _currencyRepository.GetAllCurrencies();
+                var currencyRates = await _currencyRepository.GetAllCurrencies(table);
                 return Ok(currencyRates);
             }
             catch (Exception ex)
@@ -61,7 +61,29 @@ namespace ExchangeRatesApp.API.Controllers
                 }
                 else
                 {
-                    return NotFound($"Currency with code {code} not found.");
+                    return NotFound($"Currency with code {code} not found in any table.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Wystąpił błąd: {ex.Message}");
+            }
+        }
+
+        [HttpGet("currency/{table}/{code}")]
+        public async Task<IActionResult> GetCurrencyByCode(string table, string code)
+        {
+            try
+            {
+                var specificCurrency = await _currencyRepository.GetCurrencyByCode(table, code);
+
+                if (specificCurrency != null)
+                {
+                    return Ok(specificCurrency);
+                }
+                else
+                {
+                    return NotFound($"Currency with code {code} in {table} table not found.");
                 }
             }
             catch (Exception ex)
