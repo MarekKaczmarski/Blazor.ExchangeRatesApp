@@ -25,4 +25,8 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExchangeRatesApp.Shared\ExchangeRatesApp.Models.csproj" />
+  </ItemGroup>
+
 </Project>
