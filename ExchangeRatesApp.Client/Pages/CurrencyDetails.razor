@@ -1,0 +1,36 @@
+﻿@page "/currency-detail/{code}"
+@using ExchangeRatesApp.Client.Services;
+@using ExchangeRatesApp.Models;
+@inject ICurrencyService CurrencyService
+@inject NavigationManager NavigationManager
+
+<h3>Currency Detail</h3>
+
+@if (selectedCurrency != null)
+{
+    <p>Currency: @selectedCurrency.Currency</p>
+    <p>Code: @selectedCurrency.Code</p>
+    <p>MId: @selectedCurrency.Mid</p>
+}
+else
+{
+    <p>No currency selected.</p>
+}
+
+@code {
+    [Parameter]
+    public string Code { get; set;  }
+
+    private Rate selectedCurrency;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve the selected currency using a parameter or state management.
+        // Here, we'll assume that you pass the currency code as a parameter.
+
+        var uriSegments = new Uri(NavigationManager.Uri).Segments;
+        var code = uriSegments.Last().TrimEnd('/');
+
+        selectedCurrency = await CurrencyService.GetCurrencyByCode(code);
+    }
+}

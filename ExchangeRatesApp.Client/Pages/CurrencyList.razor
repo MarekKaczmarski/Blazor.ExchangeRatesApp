@@ -1,0 +1,49 @@
+﻿@page "/currency-list"
+@using ExchangeRatesApp.Client.Data;
+@using ExchangeRatesApp.Client.Services;
+@using ExchangeRatesApp.Models;
+@inject ICurrencyService CurrencyService
+
+<h3>Currency List</h3>
+
+@if (currencies == null)
+{
+    <p>Loading currencies...</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Table</th>
+                <th>Currency</th>
+                <th>Code</th>
+                <th>Mid</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var currency in currencies)
+            {
+                @foreach (var rate in currency.Rates)
+                {
+                    <tr>
+                        <td>@currency.Table</td>
+                        <td>@rate.Currency</td>
+                        <td>@rate.Code</td>
+                        <td>@rate.Mid</td>
+                        <td><a href="currency-detail/@rate.Code">Details</a></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CurrencyRates> currencies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
+    }
+}
