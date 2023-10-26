@@ -2,6 +2,7 @@ using ExchangeRatesApp.API.Data;
 using ExchangeRatesApp.API.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Net.Http.Headers;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +34,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(policy =>
+    policy.WithOrigins("http://localhost:4000", "https://localhost:4000")
+    .AllowAnyMethod()
+    .WithHeaders(HeaderNames.ContentType)
+);
 
 app.UseHttpsRedirection();
 
