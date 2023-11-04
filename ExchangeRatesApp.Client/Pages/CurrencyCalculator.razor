@@ -8,6 +8,7 @@
 <select @bind="sourceCurrencyCode">
     @if (currencies != null)
     {
+        <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
             <option value="@currency.Code">@currency.Code</option>
@@ -20,6 +21,7 @@
 <select @bind="targetCurrencyCode">
     @if (currencies != null)
     {
+        <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
             <option value="@currency.Code">@currency.Code</option>
@@ -49,6 +51,11 @@
     {
         if (currencies != null)
         {
+            if (sourceCurrencyCode == targetCurrencyCode)
+            {
+                result = "Wybrano dwie takie same waluty.";
+                return;
+            }
             // Znajdź wybrany kurs walutowy na podstawie sourceCurrencyCode i targetCurrencyCode
             var sourceCurrency = currencies
                 .SelectMany(cr => cr.Rates)
@@ -58,11 +65,23 @@
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == targetCurrencyCode);
 
-            if (sourceCurrency != null && targetCurrency != null)
+            if (sourceCurrencyCode == "PLN")
             {
-                // Wykonaj konwersję waluty na podstawie sourceCurrency, targetCurrency i amountToConvert
-                double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
-                result = $"{amountToConvert} {sourceCurrency.Code} = {convertedAmount} {targetCurrency.Code}";
+                // Jeśli użytkownik wybrał PLN jako źródłową walutę, przelicz na podstawie PLN
+                double convertedAmount = amountToConvert / targetCurrency.Mid;
+                result = $"{amountToConvert} PLN = {convertedAmount} {targetCurrencyCode}";
+            }
+            else if (targetCurrencyCode == "PLN")
+            {
+                // Jeśli użytkownik wybrał PLN jako docelową walutę, przelicz na podstawie PLN
+                double convertedAmount = amountToConvert * sourceCurrency.Mid;
+                result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} PLN";
+            }
+            else if (sourceCurrency != null && targetCurrency != null)
+            {
+                // W przeciwnym wypadku, przelicz normalnie między dwiema walutami
+                double convertedAmount = (amountToConvert * targetCurrency.Mid) / sourceCurrency.Mid;
+                result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} {targetCurrencyCode}";
             }
             else
             {
