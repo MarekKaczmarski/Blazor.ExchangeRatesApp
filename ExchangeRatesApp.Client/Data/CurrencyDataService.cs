@@ -1,4 +1,5 @@
 ﻿using ExchangeRatesApp.Models;
+using Serilog;
 using System.Net.Http.Json;
 
 namespace ExchangeRatesApp.Client.Data
@@ -14,8 +15,8 @@ namespace ExchangeRatesApp.Client.Data
 
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
+            //var httpClient = _httpClientFactory.CreateClient();
+            //httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
 
             var tables = new List<string> { "a", "b", "c" };
             var allCurrencies = new List<CurrencyRates>();
@@ -31,8 +32,8 @@ namespace ExchangeRatesApp.Client.Data
 
         public async Task<List<CurrencyRates>> GetAllCurrencies(string table)
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
+            var httpClient = _httpClientFactory.CreateClient("NBPClient");
+            //httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
 
             var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/");
             if (response.IsSuccessStatusCode)
