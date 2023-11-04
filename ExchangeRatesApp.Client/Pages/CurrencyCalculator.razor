@@ -1,0 +1,73 @@
+﻿@page "/currency-calculator"
+@using ExchangeRatesApp.Client.Services
+@using ExchangeRatesApp.Models
+@inject ICurrencyService CurrencyService
+
+<h3>Currency Converter</h3>
+
+<select @bind="sourceCurrencyCode">
+    @if (currencies != null)
+    {
+        @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
+        {
+            <option value="@currency.Code">@currency.Code</option>
+        }
+    }
+</select>
+
+<input type="number" @bind="amountToConvert" placeholder="Enter amount" />
+
+<select @bind="targetCurrencyCode">
+    @if (currencies != null)
+    {
+        @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
+        {
+            <option value="@currency.Code">@currency.Code</option>
+        }
+    }
+</select>
+
+<button @onclick="ConvertCurrency">Convert</button>
+
+<div>
+    @result
+</div>
+
+@code {
+    private List<CurrencyRates> currencies;
+    private string sourceCurrencyCode = "USD";
+    private string targetCurrencyCode = "EUR";
+    private string result;
+    private double amountToConvert = 1.0; // Domyślna wartość 1.0
+
+    protected override async Task OnInitializedAsync()
+    {
+        currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
+    }
+
+    private void ConvertCurrency()
+    {
+        if (currencies != null)
+        {
+            // Znajdź wybrany kurs walutowy na podstawie sourceCurrencyCode i targetCurrencyCode
+            var sourceCurrency = currencies
+                .SelectMany(cr => cr.Rates)
+                .FirstOrDefault(rate => rate.Code == sourceCurrencyCode);
+
+            var targetCurrency = currencies
+                .SelectMany(cr => cr.Rates)
+                .FirstOrDefault(rate => rate.Code == targetCurrencyCode);
+
+            if (sourceCurrency != null && targetCurrency != null)
+            {
+                // Wykonaj konwersję waluty na podstawie sourceCurrency, targetCurrency i amountToConvert
+                double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
+                result = $"{amountToConvert} {sourceCurrency.Code} = {convertedAmount} {targetCurrency.Code}";
+            }
+            else
+            {
+                result = "Kurs walutowy nie znaleziony.";
+            }
+        }
+    }
+}

@@ -1,6 +1,9 @@
 ﻿@page "/currency-detail/{code}"
+
+@using Serilog;
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Models;
+
 @inject ICurrencyService CurrencyService
 @inject NavigationManager NavigationManager
 
@@ -32,5 +35,6 @@ else
         var code = uriSegments.Last().TrimEnd('/');
 
         selectedCurrency = await CurrencyService.GetCurrencyByCode(code);
+        //Log.Information($"Selected currency: {selectedCurrency.Code}");
     }
 }

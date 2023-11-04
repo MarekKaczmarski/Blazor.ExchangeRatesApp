@@ -1,7 +1,10 @@
 ﻿@page "/currency-list"
+
+@using Serilog;
 @using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Models;
+
 @inject ICurrencyService CurrencyService
 
 <h3>Currency List</h3>
@@ -34,7 +37,7 @@ else
                         <td><a href="currency-detail/@rate.Code">Details</a></td>
                     </tr>
                 }
-            }
+            }            
         </tbody>
     </table>
 }
