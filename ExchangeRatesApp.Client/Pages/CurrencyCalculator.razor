@@ -5,26 +5,30 @@
 
 <h3>Currency Converter</h3>
 
-<select @bind="sourceCurrencyCode">
+<select @bind="sourceCurrencyCode" class="chooseCurrency">
     @if (currencies != null)
     {
         <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
-            <option value="@currency.Code">@currency.Code</option>
+            <option value="@currency.Code">
+                <img class="flag-image" src="/images/flags/@GetFlagImageName(currency.Code)" alt="@currency.Code" /> @currency.Code
+            </option>
         }
     }
 </select>
 
 <input type="number" @bind="amountToConvert" placeholder="Enter amount" />
 
-<select @bind="targetCurrencyCode">
+<select @bind="targetCurrencyCode" class="chooseCurrency">
     @if (currencies != null)
     {
         <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
-            <option value="@currency.Code">@currency.Code</option>
+            <option value="@currency.Code">
+                <img class="flag-image" src="/images/flags/@GetFlagImageName(currency.Code)" alt="@currency.Code"/> @currency.Code
+            </option>
         }
     }
 </select>
@@ -47,13 +51,6 @@
     protected override async Task OnInitializedAsync()
     {
         currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
-    }
-
-    private void SwapCurrencies()
-    {
-        string temp = sourceCurrencyCode;
-        sourceCurrencyCode = targetCurrencyCode;
-        targetCurrencyCode = temp;
     }
 
     private void ConvertCurrency()
@@ -89,7 +86,7 @@
             else if (sourceCurrency != null && targetCurrency != null)
             {
                 // W przeciwnym wypadku, przelicz normalnie między dwiema walutami
-                double convertedAmount = (amountToConvert * targetCurrency.Mid) / sourceCurrency.Mid;
+                double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
                 result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} {targetCurrencyCode}";
             }
             else
@@ -97,5 +94,17 @@
                 result = "Kurs walutowy nie znaleziony.";
             }
         }
+    }
+
+    private void SwapCurrencies()
+    {
+        string temp = sourceCurrencyCode;
+        sourceCurrencyCode = targetCurrencyCode;
+        targetCurrencyCode = temp;
+    }
+
+    private string GetFlagImageName(string currencyCode)
+    {
+        return $"{currencyCode.ToLower()}.png";
     }
 }

@@ -62,3 +62,13 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.flag-image {
+    max-width: 50px;
+    max-height: 30px;
+}
+
+.chooseCurrency {
+    width: 200px;
+    height: 50px;
+}
