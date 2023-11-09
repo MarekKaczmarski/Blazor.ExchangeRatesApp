@@ -29,7 +29,9 @@
     }
 </select>
 
+<button @onclick="SwapCurrencies">Swap</button>
 <button @onclick="ConvertCurrency">Convert</button>
+
 
 <div>
     @result
@@ -45,6 +47,13 @@
     protected override async Task OnInitializedAsync()
     {
         currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
+    }
+
+    private void SwapCurrencies()
+    {
+        string temp = sourceCurrencyCode;
+        sourceCurrencyCode = targetCurrencyCode;
+        targetCurrencyCode = temp;
     }
 
     private void ConvertCurrency()
