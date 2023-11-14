@@ -27,6 +27,23 @@ namespace ExchangeRatesApp.Client.Data
                 allCurrencies.AddRange(currencyRates);
             }
 
+            var plnRate = new Rate
+            {
+                Currency = "Polski Złoty",
+                Code = "PLN",
+                Mid = 1.0
+            };
+
+            var plnCurrency = new CurrencyRates
+            {
+                Table = "A",
+                No = "custom",
+                EffectiveDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                Rates = new List<Rate> { plnRate }
+            };
+
+            allCurrencies.Add(plnCurrency);
+
             return allCurrencies;
         }
 
