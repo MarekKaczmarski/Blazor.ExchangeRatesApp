@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.API", "Exc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Models", "ExchangeRatesApp.Shared\ExchangeRatesApp.Models.csproj", "{990E45AD-046B-414A-BE2C-A299399C94D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeRatesApp.Tests", "ExchangeRatesApp.Tests\ExchangeRatesApp.Tests.csproj", "{5D9DBC1D-2816-4320-AAED-CE9DF113B313}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Tests", "ExchangeRatesApp.Tests\ExchangeRatesApp.Tests.csproj", "{5D9DBC1D-2816-4320-AAED-CE9DF113B313}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
