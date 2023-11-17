@@ -59,8 +59,29 @@ namespace ExchangeRatesApp.Client.Data
             }
             else
             {
-                throw new Exception("Błąd podczas pobierania danych z API.");
+                HandleApiError();
+                return new List<CurrencyRates>();
             }
+        }
+
+        public async Task<List<CurrencyRates>> GetLastCurrencies(string table, int topCount)
+        {
+            var httpClient = _httpClientFactory.CreateClient("NBPClient");
+            var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/last/{topCount}/");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<CurrencyRates>>();
+            }
+            else
+            {
+                HandleApiError();
+                return new List<CurrencyRates>();
+            }
+        }
+
+        private void HandleApiError()
+        {
+            throw new Exception("Błąd podczas pobierania danych z API.");
         }
     }
 }
