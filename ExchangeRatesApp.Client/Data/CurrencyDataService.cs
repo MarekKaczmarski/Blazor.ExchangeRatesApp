@@ -13,6 +13,35 @@ namespace ExchangeRatesApp.Client.Data
             _httpClientFactory = httpClientFactory;
         }
 
+        public async Task<List<Rate>> GetAllRatesFromAllTables()
+        {
+            var tables = new List<string> { "a", "b" };
+            var allRates = new List<Rate>();
+
+            foreach (var table in tables)
+            {
+                var currencyRates = await GetAllCurrencies(table);
+
+                // Wydobywanie Rates z każdego CurrencyRates i dodawanie ich do allRates
+                foreach (var currencyRate in currencyRates)
+                {
+                    allRates.AddRange(currencyRate.Rates);
+                }
+            }
+
+            var plnRate = new Rate
+            {
+                Currency = "Polski Złoty",
+                Code = "PLN",
+                Mid = 1.0
+            };
+
+            // Dodawanie Rates dla PLN
+            allRates.Add(plnRate);
+
+            return allRates;
+        }
+
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
             //var httpClient = _httpClientFactory.CreateClient();
