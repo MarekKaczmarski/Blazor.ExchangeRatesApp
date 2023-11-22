@@ -13,6 +13,11 @@ namespace ExchangeRatesApp.Client.Services
             _currencyDataService = currencyDataService;
         }
 
+        public async Task<List<Rate>> GetAllRatesFromAllTables()
+        {
+            return await _currencyDataService.GetAllRatesFromAllTables();
+        }
+
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
             return await _currencyDataService.GetAllCurrenciesFromAllTables();

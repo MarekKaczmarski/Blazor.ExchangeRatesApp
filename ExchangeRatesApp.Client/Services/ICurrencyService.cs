@@ -4,6 +4,7 @@ namespace ExchangeRatesApp.Client.Services
 {
     public interface ICurrencyService
     {
+        Task<List<Rate>> GetAllRatesFromAllTables();
         Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables();
         Task<List<CurrencyRates>> GetAllCurrencies(string table);
         Task<Rate?> GetCurrencyByCode(string code);
