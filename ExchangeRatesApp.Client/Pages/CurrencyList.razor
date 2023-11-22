@@ -4,49 +4,79 @@
 @using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Models;
+@using MudBlazor
 
 @inject ICurrencyService CurrencyService
 
-<h3>Currency List</h3>
+<div class="d-flex flex-wrap mt-4">
+    <MudSwitch @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
+    <MudSwitch @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
+    <MudSwitch @bind-Checked="@striped" Color="Color.Tertiary">Striped</MudSwitch>
+    <MudSwitch @bind-Checked="@bordered" Color="Color.Warning">Bordered</MudSwitch>
+    <MudSpacer />
+</div>
 
-@if (currencies == null)
-{
-    <p>Loading currencies...</p>
-}
-else
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Table</th>
-                <th>Currency</th>
-                <th>Code</th>
-                <th>Mid</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var currency in currencies)
-            {
-                @foreach (var rate in currency.Rates)
-                {
-                    <tr>
-                        <td>@currency.Table</td>
-                        <td>@rate.Currency</td>
-                        <td>@rate.Code</td>
-                        <td>@rate.Mid</td>
-                        <td><a href="currency-detail/@rate.Code">Details</a></td>
-                    </tr>
-                }
-            }            
-        </tbody>
-    </table>
-}
+<MudContainer>
+    
+        <h3>Rate List</h3>
+
+        @if (Rates == null)
+        {
+            <MudTypography Variant="TypographyVariant.h6" Class="mt-4" Color="Color.Primary">
+                Loading currencies...
+            </MudTypography>
+        }
+        else
+        {
+        <MudTable Items="@Rates" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<Rate,bool>(FilterFunc1)">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Periodic Elements</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Currency</MudTh>
+                <MudTh>Code</MudTh>
+                <MudTh>Mid</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Currency">@context.Currency</MudTd>
+                <MudTd DataLabel="Code">@context.Code</MudTd>
+                <MudTd DataLabel="Mid">@context.Mid</MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        }
+
+</MudContainer>
+
 
 @code {
-    private List<CurrencyRates> currencies;
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+    private string searchString1 = "";
+
+    private IEnumerable<Rate> Rates = new List<Rate>();
 
     protected override async Task OnInitializedAsync()
     {
-        currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
+        Rates = await CurrencyService.GetAllRatesFromAllTables();
+    }
+
+    private bool FilterFunc1(Rate element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(Rate element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Currency.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Code.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Mid}".Contains(searchString))
+            return true;
+        return false;
     }
 }
