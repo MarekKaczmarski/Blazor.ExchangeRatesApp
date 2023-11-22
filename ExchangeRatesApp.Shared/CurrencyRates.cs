@@ -8,7 +8,6 @@ namespace ExchangeRatesApp.Models
 {
     public class CurrencyRates
     {
-        public int Id { get; set; }
         public string Table { get; set; } = string.Empty;
         public string No { get; set; } = string.Empty;
         public string EffectiveDate { get; set; } = string.Empty;
