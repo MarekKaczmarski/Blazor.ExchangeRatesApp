@@ -35,11 +35,15 @@
                 <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
+                <MudTh>Flag</MudTh>
                 <MudTh>Currency</MudTh>
                 <MudTh>Code</MudTh>
                 <MudTh>Mid</MudTh>
             </HeaderContent>
             <RowTemplate>
+                <MudTd>
+                    <MudImage Src="@($"/images/flags/{context.Code.ToLower()}.png")" Width="24" Height="24" Alt="@context.Currency" Elevation="25" />
+                </MudTd>
                 <MudTd DataLabel="Currency">@context.Currency</MudTd>
                 <MudTd DataLabel="Code">@context.Code</MudTd>
                 <MudTd DataLabel="Mid">@context.Mid</MudTd>
