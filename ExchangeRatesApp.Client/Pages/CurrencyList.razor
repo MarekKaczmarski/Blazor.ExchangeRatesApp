@@ -41,7 +41,9 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
-                    <MudImage Src="@($"/images/flags/{context.Code.ToLower()}.png")" Width="24" Height="24" Alt="@context.Currency" Elevation="25" />
+                    <MudLink Href="@($"/currency-detail/{context.Code}")">
+                        <MudImage Src="@($"/images/flags/{context.Code.ToLower()}.png")" Width="24" Height="24" Alt="@context.Currency" Elevation="25" />@context.Currency
+                    </MudLink>
                 </MudTd>
                 <MudTd DataLabel="Currency">@context.Currency</MudTd>
                 <MudTd DataLabel="Code">@context.Code</MudTd>
