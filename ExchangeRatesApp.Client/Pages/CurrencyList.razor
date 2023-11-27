@@ -28,17 +28,16 @@
         }
         else
         {
-        <MudTable Items="@Rates" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<Rate,bool>(FilterFunc1)">
+        <MudTable Items="@Rates" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<Rate,bool>(FilterFunc1)" SortLabel="Sort By" AllowUnsorted="false">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Periodic Elements</MudText>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
-                <MudTh>Flag</MudTh>
-                <MudTh>Currency</MudTh>
-                <MudTh>Code</MudTh>
-                <MudTh>Mid</MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Rate, object>(x=>x.Currency)">Currency</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Code)">Code</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Mid)">Mid</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd>
