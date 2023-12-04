@@ -1,6 +1,8 @@
 ﻿using ExchangeRatesApp.Client.Data;
 using ExchangeRatesApp.Models;
+using ExchangeRatesApp.Models.RatesChooseDate;
 using System.Net.Http.Json;
+using static MudBlazor.CategoryTypes;
 
 namespace ExchangeRatesApp.Client.Services
 {
@@ -27,7 +29,7 @@ namespace ExchangeRatesApp.Client.Services
         {
             return await _currencyDataService.GetAllCurrencies(table);
         }
-        
+
         public async Task<Rate?> GetCurrencyByCode(string code)
         {
             var allCurrencies = await _currencyDataService.GetAllCurrenciesFromAllTables();
@@ -40,23 +42,12 @@ namespace ExchangeRatesApp.Client.Services
             return FindCurrencyByCode(currencyRates, code);
         }
 
-        private Rate? FindCurrencyByCode(IEnumerable<CurrencyRates> currencies, string code)
+        public Rate? FindCurrencyByCode(IEnumerable<CurrencyRates> currencies, string code)
         {
             return currencies
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == code);
         }
-
-        //public async Task<Rate?> GetCurrencyByCode(string table, string code)
-        //{
-        //    var currencyRates = await GetAllCurrencies(table);
-
-        //    var specificCurrency = currencyRates
-        //        .SelectMany(cr => cr.Rates)
-        //        .FirstOrDefault(rate => rate.Code == code);
-
-        //    return specificCurrency;
-        //}
     }
 }
 
