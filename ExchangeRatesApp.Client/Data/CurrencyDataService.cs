@@ -1,8 +1,11 @@
 ﻿using ExchangeRatesApp.Models;
 using ExchangeRatesApp.Models.RatesChooseDate;
+using Newtonsoft.Json;
 using Serilog;
 using System.Globalization;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ExchangeRatesApp.Client.Data
 {
@@ -76,6 +79,25 @@ namespace ExchangeRatesApp.Client.Data
                 HandleApiError();
                 return new List<CurrencyRates>();
             }
+        }
+
+        public async Task<ExchangeRatesSeries> GetLastXCurrencies(string code, int topCount)
+        {
+            var tables = new[] { "A", "B" };
+
+            foreach (var table in tables)
+            {
+                var httpClient = _httpClientFactory.CreateClient("NBPClient");
+                var exchangeRate = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>($"api/exchangerates/rates/{table}/{code}/last/{topCount}/");
+
+                if (exchangeRate?.Code == code)
+                {
+                    exchangeRate.Table = table;
+                    return exchangeRate;
+                }
+            }
+
+            return null;
         }
 
         private void HandleApiError()
