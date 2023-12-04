@@ -1,40 +1,52 @@
 ﻿@page "/currency-detail/{code}"
 
-@using Serilog;
+@using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Models;
+@using ExchangeRatesApp.Models.RatesChooseDate;
 
+@inject CurrencyDataService currencyDataService
 @inject ICurrencyService CurrencyService
 @inject NavigationManager NavigationManager
 
-<h3>Currency Detail</h3>
+<h3>Currency Detail - @Code</h3>
 
-@if (selectedCurrency != null)
+@if (exchangeRate != null)
 {
-    <p>Currency: @selectedCurrency.Currency</p>
-    <p>Code: @selectedCurrency.Code</p>
-    <p>MId: @selectedCurrency.Mid</p>
+    <div>
+        <h4>@exchangeRate.Currency</h4>
+        <p>Code: @exchangeRate.Code</p>
+        <p>Table: @exchangeRate.Table</p>
+        <p>Rates:</p>
+        <ul>
+            @foreach (var rate in exchangeRate.Rates)
+            {
+                <li>No: @rate.No, Date: @rate.EffectiveDate, Mid: @rate.Mid</li>
+            }
+        </ul>
+    </div>
 }
 else
 {
-    <p>No currency selected.</p>
+    <p>Exchange rate not found for code: @Code</p>
 }
 
 @code {
-    [Parameter]
-    public string Code { get; set;  }
+    private ExchangeRatesSeries exchangeRate;
 
-    private Rate selectedCurrency;
+    [Parameter]
+    public string Code { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        // Retrieve the selected currency using a parameter or state management.
-        // Here, we'll assume that you pass the currency code as a parameter.
+        await LoadExchangeRate();
+    }
 
-        var uriSegments = new Uri(NavigationManager.Uri).Segments;
-        var code = uriSegments.Last().TrimEnd('/');
+    private async Task LoadExchangeRate()
+    {
+        var topCount = 10; // Dostosuj ilość wpisów, jeśli to konieczne
 
-        selectedCurrency = await CurrencyService.GetCurrencyByCode(code);
-        //Log.Information($"Selected currency: {selectedCurrency.Code}");
+        exchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
     }
 }
+
