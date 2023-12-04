@@ -1,5 +1,7 @@
 ﻿using ExchangeRatesApp.Models;
+using ExchangeRatesApp.Models.RatesChooseDate;
 using Serilog;
+using System.Globalization;
 using System.Net.Http.Json;
 
 namespace ExchangeRatesApp.Client.Data
@@ -29,15 +31,15 @@ namespace ExchangeRatesApp.Client.Data
                 }
             }
 
-            var plnRate = new Rate
-            {
-                Currency = "Polski Złoty",
-                Code = "PLN",
-                Mid = 1.0
-            };
+            //var plnRate = new Rate
+            //{
+            //    Currency = "Polski Złoty",
+            //    Code = "PLN",
+            //    Mid = 1.0
+            //};
 
-            // Dodawanie Rates dla PLN
-            allRates.Add(plnRate);
+            //// Dodawanie Rates dla PLN
+            //allRates.Add(plnRate);
 
             return allRates;
         }
@@ -56,23 +58,6 @@ namespace ExchangeRatesApp.Client.Data
                 allCurrencies.AddRange(currencyRates);
             }
 
-            var plnRate = new Rate
-            {
-                Currency = "Polski Złoty",
-                Code = "PLN",
-                Mid = 1.0
-            };
-
-            var plnCurrency = new CurrencyRates
-            {
-                Table = "A",
-                No = "custom",
-                EffectiveDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                Rates = new List<Rate> { plnRate }
-            };
-
-            allCurrencies.Add(plnCurrency);
-
             return allCurrencies;
         }
 
@@ -82,21 +67,6 @@ namespace ExchangeRatesApp.Client.Data
             //httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
 
             var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<CurrencyRates>>();
-            }
-            else
-            {
-                HandleApiError();
-                return new List<CurrencyRates>();
-            }
-        }
-
-        public async Task<List<CurrencyRates>> GetLastCurrencies(string table, int topCount)
-        {
-            var httpClient = _httpClientFactory.CreateClient("NBPClient");
-            var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/last/{topCount}/");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<List<CurrencyRates>>();
