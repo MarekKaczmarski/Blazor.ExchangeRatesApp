@@ -1,4 +1,5 @@
 ﻿using ExchangeRatesApp.Models;
+using ExchangeRatesApp.Models.RatesChooseDate;
 
 namespace ExchangeRatesApp.Client.Services
 {
@@ -8,6 +9,6 @@ namespace ExchangeRatesApp.Client.Services
         Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables();
         Task<List<CurrencyRates>> GetAllCurrencies(string table);
         Task<Rate?> GetCurrencyByCode(string code);
-        Task<Rate?> GetCurrencyByCode(string table, string code);
+        Rate? FindCurrencyByCode(IEnumerable<CurrencyRates> currencies, string code);
     }
 }
