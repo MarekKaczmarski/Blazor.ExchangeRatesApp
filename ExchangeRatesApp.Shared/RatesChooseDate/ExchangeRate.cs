@@ -10,6 +10,6 @@ namespace ExchangeRatesApp.Models.RatesChooseDate
     {
         public string No { get; set; }
         public string EffectiveDate { get; set; }
-        public double Mid { get; set; }
+        public decimal Mid { get; set; }
     }
 }
