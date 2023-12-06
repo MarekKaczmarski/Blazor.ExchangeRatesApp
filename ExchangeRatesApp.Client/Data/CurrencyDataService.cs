@@ -85,19 +85,27 @@ namespace ExchangeRatesApp.Client.Data
         {
             var tables = new[] { "A", "B" };
 
-            foreach (var table in tables)
-            {
-                var httpClient = _httpClientFactory.CreateClient("NBPClient");
-                var exchangeRate = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>($"api/exchangerates/rates/{table}/{code}/last/{topCount}/");
+            var httpClient = _httpClientFactory.CreateClient("NBPClient");
+            var exchangeRatesA = await TryGetRatesFromTable(httpClient, "A", code, topCount);
 
-                if (exchangeRate?.Code == code)
-                {
-                    exchangeRate.Table = table;
-                    return exchangeRate;
-                }
+            if (exchangeRatesA == null)
+            {
+                return await TryGetRatesFromTable(httpClient, "B", code, topCount);
             }
 
-            return null;
+            return exchangeRatesA;
+        }
+
+        private async Task<ExchangeRatesSeries> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        {
+            try
+            {
+                return await httpClient.GetFromJsonAsync<ExchangeRatesSeries>($"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/last/{topCount}/");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         private void HandleApiError()
