@@ -11,31 +11,48 @@
 
 <h3>Currency Detail - @Code</h3>
 
-@if (exchangeRate != null)
+@if (ExchangeRate != null)
 {
     <div>
-        <h4>@exchangeRate.Currency</h4>
-        <p>Code: @exchangeRate.Code</p>
-        <p>Table: @exchangeRate.Table</p>
+        <h4>@ExchangeRate.Currency</h4>
+        <p>Code: @ExchangeRate.Code</p>
+        <p>Table: @ExchangeRate.Table</p>
         <p>Rates:</p>
         <ul>
-            @foreach (var rate in exchangeRate.Rates)
+            @foreach (var rate in ExchangeRate.Rates)
             {
                 <li>No: @rate.No, Date: @rate.EffectiveDate, Mid: @rate.Mid</li>
             }
         </ul>
     </div>
+
+    <ApexChart TItem="ExchangeRate"
+               Title="Historia Kursu"
+               Options="@options">
+
+        <ApexPointSeries TItem="ExchangeRate"
+                         Items="ExchangeRate.Rates"
+                         Name="Kurs średni"
+                         SeriesType="SeriesType.Line"
+                         XValue="e => e.EffectiveDate"
+                         YValue="e => e.Mid" />
+    </ApexChart>
 }
 else
 {
     <p>Exchange rate not found for code: @Code</p>
 }
 
+
 @code {
-    private ExchangeRatesSeries exchangeRate;
+    private ExchangeRatesSeries ExchangeRate { get; set; }
+
+    private List<ExchangeRate> Data { get; set; } 
+    private ApexChartOptions<ExchangeRate> options;
 
     [Parameter]
     public string Code { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,7 +63,17 @@ else
     {
         var topCount = 10; // Dostosuj ilość wpisów, jeśli to konieczne
 
-        exchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
+        ExchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
+
+
+        options = new ApexChartOptions<ExchangeRate>
+        {
+            Chart = new Chart
+            {
+                Height = 500,
+                Width = 1000
+            }
+        };
     }
 }
 
