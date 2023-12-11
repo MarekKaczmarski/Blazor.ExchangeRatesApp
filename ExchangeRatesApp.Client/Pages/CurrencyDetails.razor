@@ -13,6 +13,28 @@
 
 @if (ExchangeRate != null)
 {
+    <ApexChart TItem="ExchangeRate"
+               Title="Historia Kursu"
+               Options="@options">
+
+        <ApexPointSeries TItem="ExchangeRate"
+                         Items="ExchangeRate.Rates"
+                         Name="Kurs średni"
+                         SeriesType="SeriesType.Line"
+                         XValue="rate => rate.EffectiveDate"
+                         YValue="rate => rate.Mid" />
+    </ApexChart>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(1)">1M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(3)">3M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(6)">6M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(12)">1R</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(60)">5R</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(0)">MAX</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="LoadExchangeRatesForCustomPeriod">
+        <MudDatePicker Label="WŁASNY" DisplayMonths="2" TitleDateFormat="dddd, dd MMMM" @bind-Date="date" />
+    </MudButton>
+
     <div>
         <h4>@ExchangeRate.Currency</h4>
         <p>Code: @ExchangeRate.Code</p>
@@ -25,18 +47,6 @@
             }
         </ul>
     </div>
-
-    <ApexChart TItem="ExchangeRate"
-               Title="Historia Kursu"
-               Options="@options">
-
-        <ApexPointSeries TItem="ExchangeRate"
-                         Items="ExchangeRate.Rates"
-                         Name="Kurs średni"
-                         SeriesType="SeriesType.Line"
-                         XValue="e => e.EffectiveDate"
-                         YValue="e => e.Mid" />
-    </ApexChart>
 }
 else
 {
@@ -45,14 +55,13 @@ else
 
 
 @code {
-    private ExchangeRatesSeries ExchangeRate { get; set; }
-
-    private List<ExchangeRate> Data { get; set; } 
-    private ApexChartOptions<ExchangeRate> options;
-
     [Parameter]
     public string Code { get; set; }
 
+    private ExchangeRatesSeries ExchangeRate { get; set; }
+    private string SelectedPeriod { get; set; } = "1M";
+    private DateTime? date { get; set; }
+    private ApexChartOptions<ExchangeRate> options;
 
     protected override async Task OnInitializedAsync()
     {
