@@ -83,8 +83,6 @@ namespace ExchangeRatesApp.Client.Data
 
         public async Task<ExchangeRatesSeries> GetLastXCurrencies(string code, int topCount)
         {
-            var tables = new[] { "A", "B" };
-
             var httpClient = _httpClientFactory.CreateClient("NBPClient");
             var exchangeRatesA = await TryGetRatesFromTable(httpClient, "A", code, topCount);
 
@@ -106,6 +104,45 @@ namespace ExchangeRatesApp.Client.Data
             {
                 return null;
             }
+        }
+
+        public async Task<ExchangeRatesSeries> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var table = await TryGetRatesFromTable(code, httpClient, "A");
+            if (table == null)
+            {
+                table = await TryGetRatesFromTable(code, httpClient, "B");
+            }
+
+            if (table == null)
+            {
+                return null;
+            }
+
+            var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/{startDate.ToString("yyyy-MM-dd")}/{endDate.ToString("yyyy-MM-dd")}";
+            var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+
+            return response;
+        }
+
+        private async Task<string> TryGetRatesFromTable(string code, HttpClient httpClient, string table)
+        {
+            var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}";
+            try
+            {
+                var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+                if (response != null)
+                {
+                    return table;
+                }
+            }
+            catch (HttpRequestException)
+            {
+                // Ignoruj błędy związane z brakiem danych w danej tabeli
+            }
+
+            return null;
         }
 
         private void HandleApiError()
