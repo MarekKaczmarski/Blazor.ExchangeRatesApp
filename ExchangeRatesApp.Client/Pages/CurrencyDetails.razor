@@ -4,6 +4,7 @@
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Models;
 @using ExchangeRatesApp.Models.RatesChooseDate;
+@using Color = MudBlazor.Color
 
 @inject CurrencyDataService currencyDataService
 @inject ICurrencyService CurrencyService
@@ -65,24 +66,59 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadExchangeRate();
+        await LoadExchangeRatesForPeriod(1);
     }
 
-    private async Task LoadExchangeRate()
+    // private async Task LoadExchangeRate()
+    // {
+    //     var topCount = 10; // Dostosuj ilość wpisów, jeśli to konieczne
+
+    //     ExchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
+
+
+    //     options = new ApexChartOptions<ExchangeRate>
+    //     {
+    //         Chart = new Chart
+    //         {
+    //             Height = 500,
+    //             Width = 1000
+    //         }
+    //     };
+    // }
+
+    private async Task LoadExchangeRatesForPeriod(int months)
     {
-        var topCount = 10; // Dostosuj ilość wpisów, jeśli to konieczne
-
-        ExchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
-
+        var startDate = DateTime.Now.AddMonths(-months);
+        var endDate = DateTime.Now;
+        ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
 
         options = new ApexChartOptions<ExchangeRate>
-        {
-            Chart = new Chart
             {
-                Height = 500,
-                Width = 1000
-            }
-        };
+                Chart = new Chart
+                {
+                    Height = 350,
+                    Width = 500
+                }
+            };
+    }
+
+    private async Task LoadExchangeRatesForCustomPeriod()
+    {
+        if (date.HasValue)
+        {
+            var startDate = date.Value;
+            var endDate = DateTime.Now;
+            ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
+
+            options = new ApexChartOptions<ExchangeRate>
+                {
+                    Chart = new Chart
+                    {
+                        Height = 350,
+                        Width = 500
+                    }
+                };
+        }
     }
 }
 
