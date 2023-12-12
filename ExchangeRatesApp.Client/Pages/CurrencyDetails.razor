@@ -16,7 +16,8 @@
 {
     <ApexChart TItem="ExchangeRate"
                Title="Historia Kursu"
-               Options="@options">
+               Options="@options"
+               @ref="chart">
 
         <ApexPointSeries TItem="ExchangeRate"
                          Items="ExchangeRate.Rates"
@@ -26,13 +27,13 @@
                          YValue="rate => rate.Mid" />
     </ApexChart>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(1)">1M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(3)">3M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(6)">6M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(12)">1R</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(60)">5R</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>LoadExchangeRatesForPeriod(0)">MAX</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="LoadExchangeRatesForCustomPeriod">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(1)">1M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(3)">3M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(6)">6M</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(12)">1R</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(60)">5R</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="HandleCustomButtonClick">MAX</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary">
         <MudDatePicker Label="WŁASNY" DisplayMonths="2" TitleDateFormat="dddd, dd MMMM" @bind-Date="date" />
     </MudButton>
 
@@ -60,36 +61,35 @@ else
     public string Code { get; set; }
 
     private ExchangeRatesSeries ExchangeRate { get; set; }
-    private string SelectedPeriod { get; set; } = "1M";
     private DateTime? date { get; set; }
     private ApexChartOptions<ExchangeRate> options;
+    private ApexChart<ExchangeRate> chart;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadExchangeRatesForPeriod(1);
+        await base.OnInitializedAsync();
     }
-
-    // private async Task LoadExchangeRate()
-    // {
-    //     var topCount = 10; // Dostosuj ilość wpisów, jeśli to konieczne
-
-    //     ExchangeRate = await currencyDataService.GetLastXCurrencies(Code, topCount);
-
-
-    //     options = new ApexChartOptions<ExchangeRate>
-    //     {
-    //         Chart = new Chart
-    //         {
-    //             Height = 500,
-    //             Width = 1000
-    //         }
-    //     };
-    // }
 
     private async Task LoadExchangeRatesForPeriod(int months)
     {
         var startDate = DateTime.Now.AddMonths(-months);
         var endDate = DateTime.Now;
+        await LoadExchangeRates(startDate, endDate);
+    }
+
+    private async Task LoadExchangeRatesForCustomPeriod()
+    {
+        if (date.HasValue)
+        {
+            var startDate = date.Value;
+            var endDate = DateTime.Now;
+            await LoadExchangeRates(startDate, endDate);
+        }
+    }
+
+    private async Task LoadExchangeRates(DateTime startDate, DateTime endDate)
+    {
         ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
 
         options = new ApexChartOptions<ExchangeRate>
@@ -100,25 +100,20 @@ else
                     Width = 500
                 }
             };
+
+
     }
 
-    private async Task LoadExchangeRatesForCustomPeriod()
+    private async Task HandleButtonClick(int months)
     {
-        if (date.HasValue)
-        {
-            var startDate = date.Value;
-            var endDate = DateTime.Now;
-            ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
+        await LoadExchangeRatesForPeriod(months);
+        await chart.UpdateSeriesAsync(true);
+    }
 
-            options = new ApexChartOptions<ExchangeRate>
-                {
-                    Chart = new Chart
-                    {
-                        Height = 350,
-                        Width = 500
-                    }
-                };
-        }
+    private async Task HandleCustomButtonClick()
+    {
+        await LoadExchangeRatesForCustomPeriod();
+        await chart.UpdateSeriesAsync(true);
     }
 }
 
