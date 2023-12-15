@@ -20,8 +20,12 @@
     </h3>
     <h2>@ExchangeRate.Rates[^1].Mid</h2>
     <h4>@ExchangeRate.Rates[^1].EffectiveDate</h4>
-    <h6 style='color: @(CalculateYTD(ExchangeRate.Rates) < 0 ? "red" : "green")'>YTD (Year To Date): @CalculateYTD(ExchangeRate.Rates)%</h6>
-
+    <h6>
+        <span>YTD (Year To Date): </span>
+        <span style='color: @(YTDPercentage < 0 ? "red" : "green")'>
+            @YTDPercentage.ToString("0.00")%
+        </span>
+    </h6>
 
     <ApexChart TItem="ExchangeRate"
                Title="Historia Kursu"
@@ -90,12 +94,15 @@ else
     private ApexChartOptions<ExchangeRate> options;
     private ApexChart<ExchangeRate> chart;
 
+    private decimal YTDPercentage { get; set; }
+
     private MudDateRangePicker _picker;
     private DateRange _dateRange;
     private bool _autoClose;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadExchangeRatesForYTD();
         await LoadExchangeRatesForPeriod(1);
         await base.OnInitializedAsync();
     }
@@ -164,6 +171,29 @@ else
 
         return char.ToUpperInvariant(input[0]) + input.Substring(1);
     }
+
+    private async Task LoadExchangeRatesForYTD()
+    {
+        var startDateYTD = new DateTime(DateTime.Now.Year, 1, 1);
+        var endDateYTD = DateTime.Now;
+
+        var ratesForYTD = await currencyDataService.GetExchangeRatesInRange(Code, startDateYTD, endDateYTD);
+
+        if (ratesForYTD == null || ratesForYTD.Rates == null || ratesForYTD.Rates.Count == 0)
+        {
+            YTDPercentage = 0;
+            return;
+        }
+
+        decimal initialValue = ratesForYTD.Rates.First().Mid;
+        decimal finalValue = ratesForYTD.Rates.Last().Mid;
+
+        decimal percentageChange = ((finalValue / initialValue) - 1) * 100;
+
+        YTDPercentage = percentageChange;
+    }
+
+
 
     decimal CalculateYTD(List<ExchangeRate> rates)
     {
