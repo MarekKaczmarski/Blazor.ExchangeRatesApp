@@ -49,15 +49,31 @@ namespace ExchangeRatesApp.Client.Data
 
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
-            //var httpClient = _httpClientFactory.CreateClient();
-            //httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
-
             var tables = new List<string> { "a", "b", "c" };
             var allCurrencies = new List<CurrencyRates>();
 
             foreach (var table in tables)
             {
                 var currencyRates = await GetAllCurrencies(table);
+
+                // Dodaj kurs PLN tylko do pierwszej tabeli ("a")
+                if (table == "a")
+                {
+                    currencyRates.Insert(0, new CurrencyRates
+                    {
+                        Table = table,
+                        Rates = new List<Rate>
+                        {
+                            new Rate
+                            {
+                                Currency = "Polski Złoty",
+                                Code = "PLN",
+                                Mid = 1.0
+                            }
+                        }
+                    });
+                }
+
                 allCurrencies.AddRange(currencyRates);
             }
 
