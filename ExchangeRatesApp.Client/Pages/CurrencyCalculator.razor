@@ -2,6 +2,7 @@
 @using ExchangeRatesApp.Client.Services
 @using ExchangeRatesApp.Client.Helpers
 @using ExchangeRatesApp.Models
+@using Color = MudBlazor.Color;
 @inject ICurrencyService CurrencyService
 
 <h3>Kalkulator Walutowy</h3>
@@ -32,11 +33,11 @@
     }
 </MudSelect>
 
-<MudButton OnClick="SwapCurrencies">Zamień</MudButton>
-<MudButton OnClick="ConvertCurrency">Przewalutuj</MudButton>
+<MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Calculate" Color="Color.Primary" OnClick="ConvertCurrency">Przewalutuj</MudButton>
+<MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.SwapVert" Color="Color.Primary" OnClick="SwapCurrencies">Zamień</MudButton>
 
 <MudPaper>
-    <MudTypography Variant="Variant.H6" Class="mt-2">Result:</MudTypography>
+    <MudTypography Variant="Variant.H6" Class="mt-2">Wynik:</MudTypography>
     <div class="mt-1">
         @result
     </div>
@@ -82,7 +83,10 @@
 
     private double CalculateConvertedAmount(Rate sourceCurrency, Rate targetCurrency)
     {
-        return (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
+        double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
+        convertedAmount = Math.Round(convertedAmount, 2);
+
+        return convertedAmount;
     }
 
     private void SwapCurrencies()
