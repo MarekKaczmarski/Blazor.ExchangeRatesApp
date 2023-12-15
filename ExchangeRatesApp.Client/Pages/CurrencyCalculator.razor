@@ -1,45 +1,46 @@
 ﻿@page "/currency-calculator"
 @using ExchangeRatesApp.Client.Services
+@using ExchangeRatesApp.Client.Helpers
 @using ExchangeRatesApp.Models
 @inject ICurrencyService CurrencyService
 
-<h3>Currency Converter</h3>
+<h3>Kalkulator Walutowy</h3>
 
-<select @bind="sourceCurrencyCode" class="chooseCurrency">
+<MudSelect @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined">
     @if (currencies != null)
     {
-        <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
-            <option value="@currency.Code">
-                <img class="flag-image" src="/images/flags/@GetFlagImageName(currency.Code)" alt="@currency.Code" /> @currency.Code
-            </option>
+            <MudSelectItem Value="@(currency.Code)">
+                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" height="14" class="mr-1" /> @currency.Code
+            </MudSelectItem>
         }
     }
-</select>
+</MudSelect>
 
-<input type="number" @bind="amountToConvert" placeholder="Enter amount" />
+<MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
 
-<select @bind="targetCurrencyCode" class="chooseCurrency">
+<MudSelect @bind-Value="@targetCurrencyCode" Label="Na walutę" Variant="Variant.Outlined">
     @if (currencies != null)
     {
-        <option value="PLN">PLN</option>
         @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
         {
-            <option value="@currency.Code">
-                <img class="flag-image" src="/images/flags/@GetFlagImageName(currency.Code)" alt="@currency.Code"/> @currency.Code
-            </option>
+            <MudSelectItem Value="@currency.Code">
+                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" alt="@currency.Code" height="14" class="mr-1" /> @currency.Code
+            </MudSelectItem>
         }
     }
-</select>
+</MudSelect>
 
-<button @onclick="SwapCurrencies">Swap</button>
-<button @onclick="ConvertCurrency">Convert</button>
+<MudButton OnClick="SwapCurrencies">Zamień</MudButton>
+<MudButton OnClick="ConvertCurrency">Przewalutuj</MudButton>
 
-
-<div>
-    @result
-</div>
+<MudPaper>
+    <MudTypography Variant="Variant.H6" Class="mt-2">Result:</MudTypography>
+    <div class="mt-1">
+        @result
+    </div>
+</MudPaper>
 
 @code {
     private List<CurrencyRates> currencies;
@@ -53,7 +54,7 @@
         currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
     }
 
-    private void ConvertCurrency()
+    private async Task ConvertCurrency()
     {
         if (currencies != null)
         {
@@ -62,7 +63,7 @@
                 result = "Wybrano dwie takie same waluty.";
                 return;
             }
-            // Znajdź wybrany kurs walutowy na podstawie sourceCurrencyCode i targetCurrencyCode
+
             var sourceCurrency = currencies
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == sourceCurrencyCode);
@@ -71,29 +72,17 @@
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == targetCurrencyCode);
 
-            if (sourceCurrencyCode == "PLN")
+            if (sourceCurrency != null && targetCurrency != null)
             {
-                // Jeśli użytkownik wybrał PLN jako źródłową walutę, przelicz na podstawie PLN
-                double convertedAmount = amountToConvert / targetCurrency.Mid;
-                result = $"{amountToConvert} PLN = {convertedAmount} {targetCurrencyCode}";
-            }
-            else if (targetCurrencyCode == "PLN")
-            {
-                // Jeśli użytkownik wybrał PLN jako docelową walutę, przelicz na podstawie PLN
-                double convertedAmount = amountToConvert * sourceCurrency.Mid;
-                result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} PLN";
-            }
-            else if (sourceCurrency != null && targetCurrency != null)
-            {
-                // W przeciwnym wypadku, przelicz normalnie między dwiema walutami
-                double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
+                var convertedAmount = CalculateConvertedAmount(sourceCurrency, targetCurrency);
                 result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} {targetCurrencyCode}";
             }
-            else
-            {
-                result = "Kurs walutowy nie znaleziony.";
-            }
         }
+    }
+
+    private double CalculateConvertedAmount(Rate sourceCurrency, Rate targetCurrency)
+    {
+        return (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
     }
 
     private void SwapCurrencies()
@@ -101,10 +90,7 @@
         string temp = sourceCurrencyCode;
         sourceCurrencyCode = targetCurrencyCode;
         targetCurrencyCode = temp;
-    }
-
-    private string GetFlagImageName(string currencyCode)
-    {
-        return $"{currencyCode.ToLower()}.png";
+        ConvertCurrency(); // Dodane wywołanie konwersji po zamianie walut
     }
 }
+
