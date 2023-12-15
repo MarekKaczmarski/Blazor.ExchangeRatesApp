@@ -2,6 +2,7 @@
 
 @using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
+@using ExchangeRatesApp.Client.Helpers;
 @using ExchangeRatesApp.Models;
 @using ExchangeRatesApp.Models.RatesChooseDate;
 @using Color = MudBlazor.Color
@@ -10,10 +11,18 @@
 @inject ICurrencyService CurrencyService
 @inject NavigationManager NavigationManager
 
-<h3>Currency Detail - @Code</h3>
 
-@if (ExchangeRate != null)
+@if (ExchangeRate != null && ExchangeRate.Rates != null && ExchangeRate.Rates.Any())
 {
+    <h3 class="d-flex align-items-center">
+        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(ExchangeRate.Code)" alt="@ExchangeRate.Code" width="48" height="48" class="mr-1" />
+        @FirstLetterToUpper(ExchangeRate.Currency) (@ExchangeRate.Code)
+    </h3>
+    <h2>@ExchangeRate.Rates[^1].Mid</h2>
+    <h4>@ExchangeRate.Rates[^1].EffectiveDate</h4>
+    <h6 style='color: @(CalculateYTD(ExchangeRate.Rates) < 0 ? "red" : "green")'>YTD (Year To Date): @CalculateYTD(ExchangeRate.Rates)%</h6>
+
+
     <ApexChart TItem="ExchangeRate"
                Title="Historia Kursu"
                Options="@options"
@@ -31,13 +40,29 @@
     <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(3)">3M</MudButton>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(6)">6M</MudButton>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(12)">1R</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(60)">5R</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="HandleCustomButtonClick">MAX</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary">
-        <MudDatePicker Label="WŁASNY" DisplayMonths="2" TitleDateFormat="dddd, dd MMMM" @bind-Date="date" />
-    </MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleCustomButtonClick()">WŁASNE</MudButton>
+    <MudDateRangePicker @ref="_picker" Label="Własne" @bind-DateRange="_dateRange" AutoClose="@_autoClose" Clearable="true" DateFormat="yyyy-MM-dd" >
+        <PickerActions>
+            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Wyczyść</MudButton>
+            <MudButton OnClick="@(() => _picker.Close(false))">Anuluj</MudButton>
+            <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
 
-    <div>
+    <MudTable Items="@ExchangeRate.Rates" Class="mt-4">
+        <HeaderContent>
+            <MudTh>Tabela</MudTh>
+            <MudTh>Data</MudTh>
+            <MudTh>Średni kurs</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="rate">
+            <MudTd>@rate.No</MudTd>
+            <MudTd>@rate.EffectiveDate</MudTd>
+            <MudTd>@rate.Mid</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    @* <div>
         <h4>@ExchangeRate.Currency</h4>
         <p>Code: @ExchangeRate.Code</p>
         <p>Table: @ExchangeRate.Table</p>
@@ -48,7 +73,7 @@
                 <li>No: @rate.No, Date: @rate.EffectiveDate, Mid: @rate.Mid</li>
             }
         </ul>
-    </div>
+    </div> *@
 }
 else
 {
@@ -65,6 +90,10 @@ else
     private ApexChartOptions<ExchangeRate> options;
     private ApexChart<ExchangeRate> chart;
 
+    private MudDateRangePicker _picker;
+    private DateRange _dateRange;
+    private bool _autoClose;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadExchangeRatesForPeriod(1);
@@ -80,40 +109,79 @@ else
 
     private async Task LoadExchangeRatesForCustomPeriod()
     {
-        if (date.HasValue)
+        if (_dateRange != null && _dateRange.Start.HasValue && _dateRange.End.HasValue && _picker != null)
         {
-            var startDate = date.Value;
-            var endDate = DateTime.Now;
+            var startDate = _dateRange.Start.Value;
+            var endDate = _dateRange.End.Value;
             await LoadExchangeRates(startDate, endDate);
         }
     }
 
     private async Task LoadExchangeRates(DateTime startDate, DateTime endDate)
     {
+        if (currencyDataService == null)
+        {
+            return;
+        }
+
         ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
+
+        if (ExchangeRate == null)
+        {
+            return;
+        }
 
         options = new ApexChartOptions<ExchangeRate>
             {
                 Chart = new Chart
                 {
-                    Height = 350,
-                    Width = 500
+                    Height = 500,
+                    Width = "100%"
                 }
             };
-
+        StateHasChanged();
 
     }
 
     private async Task HandleButtonClick(int months)
     {
         await LoadExchangeRatesForPeriod(months);
+        StateHasChanged();
         await chart.UpdateSeriesAsync(true);
     }
 
     private async Task HandleCustomButtonClick()
     {
         await LoadExchangeRatesForCustomPeriod();
+        StateHasChanged();
         await chart.UpdateSeriesAsync(true);
+    }
+
+    string FirstLetterToUpper(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToUpperInvariant(input[0]) + input.Substring(1);
+    }
+
+    decimal CalculateYTD(List<ExchangeRate> rates)
+    {
+        if (rates == null || rates.Count == 0)
+        {
+            return 0;
+        }
+
+        rates = rates.OrderBy(rate => rate.EffectiveDate).ToList();
+
+        decimal firstMid = rates.First().Mid;
+        decimal lastMid = rates.Last().Mid;
+
+        decimal ytdPercentage = ((lastMid / firstMid) - 1) * 100;
+
+        string formattedResult = ytdPercentage.ToString("0.00");
+
+        return decimal.Parse(formattedResult);
     }
 }
 
