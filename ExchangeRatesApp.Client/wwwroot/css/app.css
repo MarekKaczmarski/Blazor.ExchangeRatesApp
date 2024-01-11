@@ -72,3 +72,7 @@ a, .btn-link {
     width: 200px;
     height: 50px;
 }
+
+.d-flex align-left justify-center {
+    width: 200px;
+}
