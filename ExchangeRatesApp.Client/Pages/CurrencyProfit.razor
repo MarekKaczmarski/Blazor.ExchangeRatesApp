@@ -42,10 +42,23 @@
     <MudItem xs="6">
         <MudText Typo="Typo.subtitle2">Wybrane waluty: HashSet&lt;string&gt;</MudText>
         <MudText Typo="Typo.subtitle2">{</MudText>
-        <MudText Typo="Typo.body2" Class="pl-4">@(string.Join(", ", options.Select(x => $"\"{x}\"")))</MudText>
-            <MudText Typo="Typo.subtitle2">}</MudText>
-        </MudItem>
-    </MudGrid>
+        @foreach (var selectedCurrency in options)
+        {
+            var rate = Rates.FirstOrDefault(r => r.Code == selectedCurrency);
+            if (rate != null)
+            {
+                <MudText Typo="Typo.body2" Class="pl-4">
+                    <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />@($"\"{rate.Code} - {rate.Currency}\"")
+                </MudText>
+
+                <MudDatePicker Label="Data zakupu"/>
+
+                <MudNumericField Label="Wartość zakupu" @bind-Value="purchaseValue" />
+            }
+        }
+        <MudText Typo="Typo.subtitle2">}</MudText>
+    </MudItem>
+</MudGrid>
 
 <p>
     @if (profitCalculated)
@@ -67,6 +80,9 @@
     private List<Rate> selectedCurrencies = new List<Rate>();
 
     private bool profitCalculated = false;
+
+    private Dictionary<string, DateTime?> purchaseDates = new Dictionary<string, DateTime?>();
+    private Dictionary<string, decimal> purchaseValues = new Dictionary<string, decimal>();
 
     protected override async Task OnInitializedAsync()
     {
