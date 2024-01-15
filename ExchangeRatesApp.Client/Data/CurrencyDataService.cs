@@ -56,7 +56,6 @@ namespace ExchangeRatesApp.Client.Data
             {
                 var currencyRates = await GetAllCurrencies(table);
 
-                // Dodaj kurs PLN tylko do pierwszej tabeli ("a")
                 if (table == "a")
                 {
                     currencyRates.Insert(0, new CurrencyRates
@@ -66,7 +65,7 @@ namespace ExchangeRatesApp.Client.Data
                         {
                             new Rate
                             {
-                                Currency = "Polski Złoty",
+                                Currency = "polski złoty",
                                 Code = "PLN",
                                 Mid = 1.0
                             }
@@ -120,6 +119,26 @@ namespace ExchangeRatesApp.Client.Data
             {
                 return null;
             }
+        }
+
+        public async Task<ExchangeRatesSeries> GetExchangeRatesOnDate(string code, DateTime date)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var table = await TryGetRatesFromTable(code, httpClient, "A");
+            if (table == null)
+            {
+                table = await TryGetRatesFromTable(code, httpClient, "B");
+            }
+
+            if (table == null)
+            {
+                return null;
+            }
+
+            var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/{date.ToString("yyyy-MM-dd")}";
+            var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+
+            return response;
         }
 
         public async Task<ExchangeRatesSeries> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
