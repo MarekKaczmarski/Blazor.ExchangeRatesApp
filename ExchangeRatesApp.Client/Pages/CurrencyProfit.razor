@@ -1,0 +1,56 @@
+﻿@page "/currency-profit"
+
+@using ExchangeRatesApp.Models.RatesChooseDate;
+@using Serilog;
+@using ExchangeRatesApp.Client.Data;
+@using ExchangeRatesApp.Client.Services;
+@using ExchangeRatesApp.Models;
+@using MudBlazor
+@using Color = MudBlazor.Color
+@using Size = MudBlazor.Size
+
+@inject ICurrencyService CurrencyService
+@inject CurrencyDataService currencyDataService
+
+<MudSelect SelectedValues="@Rates" MultiSelection="true" Label="Waluty" Variant="Variant.Outlined">
+    @foreach (var rate in Rates)
+    {
+        <MudSelectItem Value="@rate.Code">
+            <MudImage Src="@($"/images/flags/{rate.Code.ToLower()}.png")" Width="24" Height="24" Alt="@rate.Currency" Elevation="25" />@rate.Currency
+        </MudSelectItem>
+    }
+</MudSelect>
+
+<MudNumericField Label="Wartość zakupu" @bind-Value="purchaseValue" />
+
+@* <MudButton OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton> *@
+
+@code {
+    string selectedCurrency = "USD";
+    DateTime purchaseDate = DateTime.Now;
+    decimal purchaseValue = 0;
+    //ExchangeRatesSeries exchangeRates;
+
+    private List<Rate> Rates = new List<Rate>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Rates = await CurrencyService.GetAllRatesFromAllTables();
+    }
+
+    // public async Task CalculateProfit()
+    // {
+    //     exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate);
+    //     if (exchangeRates != null)
+    //     {
+    //         // Tutaj możesz użyć danych kursów walut i wprowadzonych danych
+    //         // do obliczenia zysku/straty.
+    //         // Należy dostosować ten fragment kodu do konkretnych wymagań biznesowych.
+    //         // Na przykład, można uzyskać kurs kupna danej waluty z exchangeRates.Rates.First().Mid.
+    //     }
+    //     else
+    //     {
+    //         // Obsługa błędu - nie udało się pobrać danych walutowych.
+    //     }
+    // }
+}
