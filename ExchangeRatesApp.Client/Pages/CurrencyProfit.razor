@@ -1,5 +1,6 @@
 ﻿@page "/currency-profit"
 
+@using ExchangeRatesApp.Client.Helpers;
 @using ExchangeRatesApp.Models.RatesChooseDate;
 @using Serilog;
 @using ExchangeRatesApp.Client.Data;
@@ -12,45 +13,93 @@
 @inject ICurrencyService CurrencyService
 @inject CurrencyDataService currencyDataService
 
-<MudSelect SelectedValues="@Rates" MultiSelection="true" Label="Waluty" Variant="Variant.Outlined">
-    @foreach (var rate in Rates)
+<MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-Value="@value" @bind-SelectedValues="options" Label="Waluta" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @if (Rates != null)
     {
-        <MudSelectItem Value="@rate.Code">
-            <MudImage Src="@($"/images/flags/{rate.Code.ToLower()}.png")" Width="24" Height="24" Alt="@rate.Currency" Elevation="25" />@rate.Currency
-        </MudSelectItem>
+        foreach (var rate in Rates)
+        {
+            <MudSelectItem Value="@rate.Code">
+                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" /> @($"{rate.Code} - {rate.Currency}")
+            </MudSelectItem>
+        }
     }
-</MudSelect>
+</MudSelect> 
+
 
 <MudNumericField Label="Wartość zakupu" @bind-Value="purchaseValue" />
 
-@* <MudButton OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton> *@
+<MudDatePicker Label="Data zakupu" @bind-Date="purchaseDate" />
+
+<MudButton OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton>
+
+<MudGrid Class="mt-6 px-4">
+    <MudItem xs="6">
+        <MudText Typo="Typo.subtitle2">Waluty:</MudText>
+        <MudText Typo="Typo.subtitle2">"</MudText>
+        <MudText Typo="Typo.body2" Class="pl-4">@value</MudText>
+        <MudText Typo="Typo.subtitle2">"</MudText>
+    </MudItem>
+    <MudItem xs="6">
+        <MudText Typo="Typo.subtitle2">Wybrane waluty: HashSet&lt;string&gt;</MudText>
+        <MudText Typo="Typo.subtitle2">{</MudText>
+        <MudText Typo="Typo.body2" Class="pl-4">@(string.Join(", ", options.Select(x => $"\"{x}\"")))</MudText>
+            <MudText Typo="Typo.subtitle2">}</MudText>
+        </MudItem>
+    </MudGrid>
+
+<p>
+    @if (profitCalculated)
+    {
+        <strong>Zysk/Strata:</strong> @profit
+    }
+</p>
 
 @code {
-    string selectedCurrency = "USD";
-    DateTime purchaseDate = DateTime.Now;
+    private bool multiselectionTextChoice;
+    private string value { get; set; } = "Brak wybranych walut";
+    private IEnumerable<string> options { get; set; } = new HashSet<string>();
+
+    DateTime? purchaseDate = DateTime.Today;
     decimal purchaseValue = 0;
-    //ExchangeRatesSeries exchangeRates;
+    private decimal profit = 0;
 
     private List<Rate> Rates = new List<Rate>();
+    private List<Rate> selectedCurrencies = new List<Rate>();
+
+    private bool profitCalculated = false;
 
     protected override async Task OnInitializedAsync()
     {
         Rates = await CurrencyService.GetAllRatesFromAllTables();
     }
 
-    // public async Task CalculateProfit()
-    // {
-    //     exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate);
-    //     if (exchangeRates != null)
-    //     {
-    //         // Tutaj możesz użyć danych kursów walut i wprowadzonych danych
-    //         // do obliczenia zysku/straty.
-    //         // Należy dostosować ten fragment kodu do konkretnych wymagań biznesowych.
-    //         // Na przykład, można uzyskać kurs kupna danej waluty z exchangeRates.Rates.First().Mid.
-    //     }
-    //     else
-    //     {
-    //         // Obsługa błędu - nie udało się pobrać danych walutowych.
-    //     }
-    // }
+    public async Task CalculateProfit()
+    {
+        if (selectedCurrencies.Any())
+        {
+            foreach (var selectedCurrency in selectedCurrencies)
+            {
+                var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency.Code, purchaseDate.Value);
+
+                if (exchangeRates != null && exchangeRates.Rates.Any())
+                {
+                    var selectedCurrencyRate = exchangeRates.Rates.First();
+
+                    decimal purchaseValueInSelectedCurrency = purchaseValue / selectedCurrencyRate.Mid;
+                    profit += (purchaseValueInSelectedCurrency * selectedCurrencyRate.Mid) - purchaseValue;
+                }
+                else
+                {
+                    // Obsługa błędu - brak kursu dla wybranej waluty na wybraną datę
+                }
+            }
+
+            profitCalculated = true;
+        }
+        else
+        {
+            // Obsługa błędu - brak wybranych walut
+        }
+    }
+}
 }
