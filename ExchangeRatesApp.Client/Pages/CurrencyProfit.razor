@@ -47,13 +47,38 @@
             var rate = Rates.FirstOrDefault(r => r.Code == selectedCurrency);
             if (rate != null)
             {
-                <MudText Typo="Typo.body2" Class="pl-4">
+                if (!selectedCurrencyPurchaseDate.ContainsKey(selectedCurrency))
+                {
+                    selectedCurrencyPurchaseDate[selectedCurrency] = null; // Dodaj pustą wartość dla daty
+                    selectedCurrencyPurchaseValue[selectedCurrency] = 0; // Dodaj wartość 0 dla wartości zakupu
+                }
+
+                <div>
+                    <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />
+                    <MudText Typo="Typo.body2" Class="pl-1">@($"\"{rate.Code} - {rate.Currency}\"")</MudText>
+
+                        <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
+                        <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
+                        <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                    </div>
+
+                @* <MudText Typo="Typo.body2" Class="pl-4">
                     <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />@($"\"{rate.Code} - {rate.Currency}\"")
                 </MudText>
 
-                <MudDatePicker Label="Data zakupu"/>
-
-                <MudNumericField Label="Wartość zakupu" @bind-Value="purchaseValue" />
+                <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
+                @if (selectedCurrencyPurchaseDate.ContainsKey(selectedCurrency))
+                {
+                    <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
+                    <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                }
+                else
+                {
+                    <div>
+                        <!-- Obsługa braku wartości dla danego klucza -->
+                        <p>Brak danych dla wybranej waluty.</p>
+                    </div>
+                } *@
             }
         }
         <MudText Typo="Typo.subtitle2">}</MudText>
@@ -79,23 +104,26 @@
     private List<Rate> Rates = new List<Rate>();
     private List<Rate> selectedCurrencies = new List<Rate>();
 
-    private bool profitCalculated = false;
+    private Dictionary<string, DateTime?> selectedCurrencyPurchaseDate = new Dictionary<string, DateTime?>();
+    private Dictionary<string, decimal> selectedCurrencyPurchaseValue = new Dictionary<string, decimal>();
 
-    private Dictionary<string, DateTime?> purchaseDates = new Dictionary<string, DateTime?>();
-    private Dictionary<string, decimal> purchaseValues = new Dictionary<string, decimal>();
+    private bool profitCalculated = false;
 
     protected override async Task OnInitializedAsync()
     {
         Rates = await CurrencyService.GetAllRatesFromAllTables();
     }
 
-    public async Task CalculateProfit()
+    private async Task CalculateProfit()
     {
-        if (selectedCurrencies.Any())
+        if (options.Any())
         {
-            foreach (var selectedCurrency in selectedCurrencies)
+            foreach (var selectedCurrency in options)
             {
-                var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency.Code, purchaseDate.Value);
+                var purchaseDate = selectedCurrencyPurchaseDate[selectedCurrency];
+                var purchaseValue = selectedCurrencyPurchaseValue[selectedCurrency];
+
+                var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
 
                 if (exchangeRates != null && exchangeRates.Rates.Any())
                 {
@@ -117,5 +145,4 @@
             // Obsługa błędu - brak wybranych walut
         }
     }
-}
 }
