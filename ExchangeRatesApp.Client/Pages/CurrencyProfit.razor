@@ -14,7 +14,7 @@
 @inject CurrencyDataService currencyDataService
 
 <MudItem xs="4">
-    <MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-Value="@value" @bind-SelectedValues="options" Label="Wybierz waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    <MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-SelectedValues="options" Label="Wybierz waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
         @if (Rates != null)
         {
             foreach (var rate in Rates)
@@ -50,7 +50,7 @@
                         <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
                         <MudItem xs="3">
                             <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
-                            <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                            <MudNumericField Label="Wartość zakupu (PLN)" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
                         </MudItem>
                         <!-- Zysk/Strata dla każdej waluty -->
                         <p>
@@ -87,7 +87,11 @@
 </MudItem>
 
 <p>
-    @if (profitCalculated && profits.Any())
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <span class="error">@errorMessage</span>
+    }
+    else if (profitCalculated && profits.Any())
     {
         <strong>
             @if (totalProfit >= 0)
@@ -105,7 +109,6 @@
 
 @code {
     private bool multiselectionTextChoice;
-    private string value { get; set; } = "Brak wybranych walut";
     private IEnumerable<string> options { get; set; } = new HashSet<string>();
 
     DateTime? purchaseDate = DateTime.Today;
@@ -121,6 +124,8 @@
 
     private bool profitCalculated = false;
 
+    private string errorMessage;
+
     protected override async Task OnInitializedAsync()
     {
         Rates = await CurrencyService.GetAllRatesFromAllTables();
@@ -128,6 +133,9 @@
 
     private async Task CalculateProfit()
     {
+        ExchangeRatesSeries exchangeRates = null;
+
+        errorMessage = string.Empty;
         profitCalculated = false;
         profits.Clear();
         profit = 0;
@@ -141,13 +149,33 @@
 
                 if (purchaseDate.HasValue)
                 {
+                    if (purchaseValue < 0)
+                    {
+                        errorMessage = "Wartość zakupu nie może być mniejsza od 0";
+                        continue;
+                    }
+
                     var currentRate = Rates.FirstOrDefault(r => r.Code == selectedCurrency)?.Mid;
                     if (currentRate == null)
                     {
                         continue;
                     }
 
-                    var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
+                    try 
+                    {
+                        exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
+
+                        if (exchangeRates == null || exchangeRates.Rates == null || !exchangeRates.Rates.Any())
+                        {
+                            return;
+                        }
+                    }
+                    catch (HttpRequestException)
+                    {
+                        errorMessage = "Brak kursów dla podanej daty";
+                        return;
+                    }
+
                     var purchaseRate = exchangeRates?.Rates.FirstOrDefault()?.Mid;
                     if (purchaseRate == null)
                     {
