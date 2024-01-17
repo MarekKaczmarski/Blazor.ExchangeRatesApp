@@ -67,7 +67,7 @@ namespace ExchangeRatesApp.Client.Data
                             {
                                 Currency = "polski złoty",
                                 Code = "PLN",
-                                Mid = 1.0
+                                Mid = 1.0m
                             }
                         }
                     });

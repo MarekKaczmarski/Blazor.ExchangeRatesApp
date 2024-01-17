@@ -14,6 +14,6 @@ namespace ExchangeRatesApp.Models
     {
         public string Currency { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
-        public double Mid { get; set; }
+        public decimal Mid { get; set; }
     }
 }

@@ -13,35 +13,23 @@
 @inject ICurrencyService CurrencyService
 @inject CurrencyDataService currencyDataService
 
-<MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-Value="@value" @bind-SelectedValues="options" Label="Waluta" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-    @if (Rates != null)
-    {
-        foreach (var rate in Rates)
+<MudItem xs="4">
+    <MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-Value="@value" @bind-SelectedValues="options" Label="Wybierz waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+        @if (Rates != null)
         {
-            <MudSelectItem Value="@rate.Code">
-                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" /> @($"{rate.Code} - {rate.Currency}")
-            </MudSelectItem>
+            foreach (var rate in Rates)
+            {
+                <MudSelectItem Value="@rate.Code">
+                    <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" /> @($"{rate.Code} - {rate.Currency}")
+                </MudSelectItem>
+            }
         }
-    }
-</MudSelect> 
-
-
-<MudNumericField Label="Wartość zakupu" @bind-Value="purchaseValue" />
-
-<MudDatePicker Label="Data zakupu" @bind-Date="purchaseDate" />
-
-<MudButton OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton>
+    </MudSelect> 
+</MudItem>
 
 <MudGrid Class="mt-6 px-4">
     <MudItem xs="6">
-        <MudText Typo="Typo.subtitle2">Waluty:</MudText>
-        <MudText Typo="Typo.subtitle2">"</MudText>
-        <MudText Typo="Typo.body2" Class="pl-4">@value</MudText>
-        <MudText Typo="Typo.subtitle2">"</MudText>
-    </MudItem>
-    <MudItem xs="6">
-        <MudText Typo="Typo.subtitle2">Wybrane waluty: HashSet&lt;string&gt;</MudText>
-        <MudText Typo="Typo.subtitle2">{</MudText>
+        <MudText Typo="Typo.subtitle2">Wybrane waluty:</MudText>
         @foreach (var selectedCurrency in options)
         {
             var rate = Rates.FirstOrDefault(r => r.Code == selectedCurrency);
@@ -54,41 +42,64 @@
                 }
 
                 <div>
-                    <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />
-                    <MudText Typo="Typo.body2" Class="pl-1">@($"\"{rate.Code} - {rate.Currency}\"")</MudText>
+                    <div class="d-flex align-center">
+                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />
+                        <MudText Typo="Typo.body2" Class="pl-1">@($"{rate.Code} - {rate.Currency}")</MudText>
+                    </div>
 
                         <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
-                        <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
-                        <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                        <MudItem xs="3">
+                            <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
+                            <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                        </MudItem>
+                        <!-- Zysk/Strata dla każdej waluty -->
+                        <p>
+                            @if (profitCalculated)
+                            {
+                                @if (profits.ContainsKey(selectedCurrency))
+                                {
+                                    <strong>
+                                    @if (profits[selectedCurrency] >= 0)
+                                    {
+                                        <span class="profit" style="color: green;">Zysk:</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="loss" style="color: red;">Strata:</span>
+                                    }
+                                    </strong>
+                                    <span class="@ProfitColor(profits[selectedCurrency])">@RoundProfit(profits[selectedCurrency])</span>
+                                }
+                                else
+                                {
+                                    <strong>Brak danych dla wybranej waluty</strong>
+                                }
+                            }
+                        </p>
                     </div>
-
-                @* <MudText Typo="Typo.body2" Class="pl-4">
-                    <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />@($"\"{rate.Code} - {rate.Currency}\"")
-                </MudText>
-
-                <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
-                @if (selectedCurrencyPurchaseDate.ContainsKey(selectedCurrency))
-                {
-                    <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
-                    <MudNumericField Label="Wartość zakupu" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
-                }
-                else
-                {
-                    <div>
-                        <!-- Obsługa braku wartości dla danego klucza -->
-                        <p>Brak danych dla wybranej waluty.</p>
-                    </div>
-                } *@
             }
         }
-        <MudText Typo="Typo.subtitle2">}</MudText>
     </MudItem>
 </MudGrid>
 
+<MudItem xs="12" Class="d-flex align-center">
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Wallet" Color="Color.Primary" OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton>
+</MudItem>
+
 <p>
-    @if (profitCalculated)
+    @if (profitCalculated && profits.Any())
     {
-        <strong>Zysk/Strata:</strong> @profit
+        <strong>
+            @if (totalProfit >= 0)
+            {
+                <span class="profit" style="color: green;">Ogólny Zysk:</span>
+            }
+            else
+            {
+                <span class="loss" style="color: red;">Ogólna Strata:</span>
+            }
+        </strong>
+        <span class="@ProfitColor(totalProfit)">@RoundProfit(totalProfit)</span>
     }
 </p>
 
@@ -106,6 +117,7 @@
 
     private Dictionary<string, DateTime?> selectedCurrencyPurchaseDate = new Dictionary<string, DateTime?>();
     private Dictionary<string, decimal> selectedCurrencyPurchaseValue = new Dictionary<string, decimal>();
+    private Dictionary<string, decimal> profits = new Dictionary<string, decimal>();
 
     private bool profitCalculated = false;
 
@@ -116,6 +128,10 @@
 
     private async Task CalculateProfit()
     {
+        profitCalculated = false;
+        profits.Clear();
+        profit = 0;
+
         if (options.Any())
         {
             foreach (var selectedCurrency in options)
@@ -123,18 +139,37 @@
                 var purchaseDate = selectedCurrencyPurchaseDate[selectedCurrency];
                 var purchaseValue = selectedCurrencyPurchaseValue[selectedCurrency];
 
-                var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
-
-                if (exchangeRates != null && exchangeRates.Rates.Any())
+                if (purchaseDate.HasValue)
                 {
-                    var selectedCurrencyRate = exchangeRates.Rates.First();
+                    var currentRate = Rates.FirstOrDefault(r => r.Code == selectedCurrency)?.Mid;
+                    if (currentRate == null)
+                    {
+                        continue;
+                    }
 
-                    decimal purchaseValueInSelectedCurrency = purchaseValue / selectedCurrencyRate.Mid;
-                    profit += (purchaseValueInSelectedCurrency * selectedCurrencyRate.Mid) - purchaseValue;
+                    var exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
+                    var purchaseRate = exchangeRates?.Rates.FirstOrDefault()?.Mid;
+                    if (purchaseRate == null)
+                    {
+                        continue;
+                    }
+
+                    var currentPurchaseValue = purchaseValue / purchaseRate.Value * currentRate.Value;
+                    var profitLoss = currentPurchaseValue - purchaseValue;
+
+                    // Dodaj zysk/stratę do słownika dla każdej waluty
+                    if (profits.ContainsKey(selectedCurrency))
+                    {
+                        profits[selectedCurrency] += profitLoss;
+                    }
+                    else
+                    {
+                        profits[selectedCurrency] = profitLoss;
+                    }
                 }
                 else
                 {
-                    // Obsługa błędu - brak kursu dla wybranej waluty na wybraną datę
+                    continue;
                 }
             }
 
@@ -144,5 +179,11 @@
         {
             // Obsługa błędu - brak wybranych walut
         }
+
     }
+
+    private decimal RoundProfit(decimal profit) => Math.Round(profit, 2);
+    private decimal totalProfit => Math.Round(profits.Values.Sum(), 2);
+    private string ProfitColor(decimal profit) => profit >= 0 ? "profit" : "loss";
 }
+

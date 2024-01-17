@@ -146,7 +146,7 @@
     private string selectedSourceCurrency;
     private string selectedTargetCurrency;
 
-    private double amountToConvert = 1.0; // Domyślna wartość 1.0
+    private decimal amountToConvert = 1.0m; // Domyślna wartość 1.0
 
     protected override async Task OnInitializedAsync()
     {
@@ -181,9 +181,9 @@
         }
     }
 
-    private double CalculateConvertedAmount(Rate sourceCurrency, Rate targetCurrency)
+    private decimal CalculateConvertedAmount(Rate sourceCurrency, Rate targetCurrency)
     {
-        double convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
+        decimal convertedAmount = (amountToConvert * sourceCurrency.Mid) / targetCurrency.Mid;
         convertedAmount = Math.Round(convertedAmount, 2);
 
         return convertedAmount;
