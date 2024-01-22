@@ -1,8 +1,8 @@
 ﻿using ExchangeRatesApp.Client.Data;
 using ExchangeRatesApp.Models;
 using ExchangeRatesApp.Models.RatesChooseDate;
-using System.Net.Http.Json;
 using static MudBlazor.CategoryTypes;
+using System.Net.Http;
 
 namespace ExchangeRatesApp.Client.Services
 {
@@ -30,6 +30,30 @@ namespace ExchangeRatesApp.Client.Services
             return await _currencyDataService.GetAllCurrencies(table);
         }
 
+        public async Task<ExchangeRatesSeries> GetLastXCurrencies(string code, int topCount)
+        {
+            return await _currencyDataService.GetLastXCurrencies(code, topCount);
+        }
+
+        public async Task<ExchangeRatesSeries> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        {
+            return await _currencyDataService.TryGetRatesFromTable(httpClient, table, code, topCount);
+        }
+        public async Task<ExchangeRatesSeries> GetExchangeRatesOnDate(string code, DateTime date)
+        {
+            return await _currencyDataService.GetExchangeRatesOnDate(code, date);
+        }
+        public async Task<ExchangeRatesSeries> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        {
+            return await _currencyDataService.GetExchangeRatesInRange(code, startDate, endDate);
+        }
+        public async Task<string> TryGetRatesFromTable(string code, HttpClient httpClient, string table)
+        {
+            return await _currencyDataService.TryGetRatesFromTable(code, httpClient, table);
+        }
+
+        //
+
         public async Task<Rate?> GetCurrencyByCode(string code)
         {
             var allCurrencies = await _currencyDataService.GetAllCurrenciesFromAllTables();
@@ -47,6 +71,10 @@ namespace ExchangeRatesApp.Client.Services
             return currencies
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == code);
+        }
+        public void HandleApiError()
+        {
+            _currencyDataService.HandleApiError();
         }
     }
 }
