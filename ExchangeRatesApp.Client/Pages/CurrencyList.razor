@@ -21,7 +21,7 @@
         {
         <MudTable Items="@Rates" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<Rate,bool>(FilterFunc1)" SortLabel="Sort By" AllowUnsorted="false">
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Lista Walut</MudText>
+                <MudText Typo="Typo.h6">Waluty</MudText>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchString1" Placeholder="Szukaj" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
