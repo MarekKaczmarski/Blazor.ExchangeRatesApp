@@ -11,6 +11,7 @@
 @using Size = MudBlazor.Size
 
 @inject ICurrencyService CurrencyService
+@inject CurrencyDataService currencyDataService
 
 <MudItem xs="4">
     <MudSelect Class="d-flex align-left justify-center" FullWidth="false" MultiSelection="true" @bind-SelectedValues="options" Label="Wybierz waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
@@ -36,8 +37,8 @@
             {
                 if (!selectedCurrencyPurchaseDate.ContainsKey(selectedCurrency))
                 {
-                    selectedCurrencyPurchaseDate[selectedCurrency] = null;
-                    selectedCurrencyPurchaseValue[selectedCurrency] = 0;
+                    selectedCurrencyPurchaseDate[selectedCurrency] = null; // Dodaj pustą wartość dla daty
+                    selectedCurrencyPurchaseValue[selectedCurrency] = 0; // Dodaj wartość 0 dla wartości zakupu
                 }
 
                 <div>
@@ -46,11 +47,12 @@
                         <MudText Typo="Typo.body2" Class="pl-1">@($"{rate.Code} - {rate.Currency}")</MudText>
                     </div>
 
+                        <!-- Dodaj pola dla daty i wartości dla każdej waluty -->
                         <MudItem xs="3">
                             <MudDatePicker Label="Data zakupu" @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
                             <MudNumericField Label="Wartość zakupu (PLN)" @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
                         </MudItem>
-
+                        <!-- Zysk/Strata dla każdej waluty -->
                         <p>
                             @if (profitCalculated)
                             {
@@ -122,7 +124,7 @@
 
     private bool profitCalculated = false;
 
-    private string errorMessage = "";
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -161,7 +163,7 @@
 
                     try 
                     {
-                        exchangeRates = await CurrencyService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
+                        exchangeRates = await currencyDataService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
 
                         if (exchangeRates == null || exchangeRates.Rates == null || !exchangeRates.Rates.Any())
                         {
@@ -183,7 +185,7 @@
                     var currentPurchaseValue = purchaseValue / purchaseRate.Value * currentRate.Value;
                     var profitLoss = currentPurchaseValue - purchaseValue;
 
-                    // zysk/strata do słownika dla każdej waluty
+                    // Dodaj zysk/stratę do słownika dla każdej waluty
                     if (profits.ContainsKey(selectedCurrency))
                     {
                         profits[selectedCurrency] += profitLoss;
@@ -203,7 +205,7 @@
         }
         else
         {
-            //brak wybranych walut
+            // Obsługa błędu - brak wybranych walut
         }
 
     }

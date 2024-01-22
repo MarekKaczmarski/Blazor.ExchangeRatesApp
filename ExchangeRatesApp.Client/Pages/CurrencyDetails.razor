@@ -7,7 +7,9 @@
 @using ExchangeRatesApp.Models.RatesChooseDate;
 @using Color = MudBlazor.Color
 
+@inject CurrencyDataService currencyDataService
 @inject ICurrencyService CurrencyService
+@inject NavigationManager NavigationManager
 
 
 @if (ExchangeRate != null && ExchangeRate.Rates != null && ExchangeRate.Rates.Any())
@@ -124,12 +126,12 @@ else
 
     private async Task LoadExchangeRates(DateTime startDate, DateTime endDate)
     {
-        if (CurrencyService == null)
+        if (currencyDataService == null)
         {
             return;
         }
 
-        ExchangeRate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
+        ExchangeRate = await currencyDataService.GetExchangeRatesInRange(Code, startDate, endDate);
 
         if (ExchangeRate == null)
         {
@@ -175,7 +177,7 @@ else
         var startDateYTD = new DateTime(DateTime.Now.Year, 1, 1);
         var endDateYTD = DateTime.Now;
 
-        var ratesForYTD = await CurrencyService.GetExchangeRatesInRange(Code, startDateYTD, endDateYTD);
+        var ratesForYTD = await currencyDataService.GetExchangeRatesInRange(Code, startDateYTD, endDateYTD);
 
         if (ratesForYTD == null || ratesForYTD.Rates == null || ratesForYTD.Rates.Count == 0)
         {
