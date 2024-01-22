@@ -5,8 +5,6 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Client", "ExchangeRatesApp.Client\ExchangeRatesApp.Client.csproj", "{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.API", "ExchangeRatesApp.API\ExchangeRatesApp.API.csproj", "{DD096697-84EB-44EF-BDAA-9ED3F07CA34C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Models", "ExchangeRatesApp.Shared\ExchangeRatesApp.Models.csproj", "{990E45AD-046B-414A-BE2C-A299399C94D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Tests", "ExchangeRatesApp.Tests\ExchangeRatesApp.Tests.csproj", "{5D9DBC1D-2816-4320-AAED-CE9DF113B313}"
@@ -21,10 +19,6 @@ Global
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD096697-84EB-44EF-BDAA-9ED3F07CA34C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD096697-84EB-44EF-BDAA-9ED3F07CA34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD096697-84EB-44EF-BDAA-9ED3F07CA34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD096697-84EB-44EF-BDAA-9ED3F07CA34C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{990E45AD-046B-414A-BE2C-A299399C94D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{990E45AD-046B-414A-BE2C-A299399C94D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{990E45AD-046B-414A-BE2C-A299399C94D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
