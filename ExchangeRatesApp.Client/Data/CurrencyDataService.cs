@@ -84,7 +84,7 @@ namespace ExchangeRatesApp.Client.Data
             }
         }
 
-        public async Task<ExchangeRatesSeries> GetLastXCurrencies(string code, int topCount)
+        public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
         {
             var httpClient = _httpClientFactory.CreateClient("NBPClient");
             var exchangeRatesA = await TryGetRatesFromTable(httpClient, "A", code, topCount);
@@ -97,11 +97,11 @@ namespace ExchangeRatesApp.Client.Data
             return exchangeRatesA;
         }
 
-        public async Task<ExchangeRatesSeries> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<ExchangeRatesSeries>($"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/last/{topCount}/");
+                return await httpClient.GetFromJsonAsync<CurrencyRates>($"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/last/{topCount}/");
             }
             catch (HttpRequestException)
             {
@@ -109,7 +109,7 @@ namespace ExchangeRatesApp.Client.Data
             }
         }
 
-        public async Task<ExchangeRatesSeries> GetExchangeRatesOnDate(string code, DateTime date)
+        public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var table = await TryGetRatesFromTable(code, httpClient, "A");
@@ -124,12 +124,12 @@ namespace ExchangeRatesApp.Client.Data
             }
 
             var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/{date.ToString("yyyy-MM-dd")}";
-            var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+            var response = await httpClient.GetFromJsonAsync<CurrencyRates>(apiUrl);
 
             return response;
         }
 
-        public async Task<ExchangeRatesSeries> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        public async Task<CurrencyRates> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var table = await TryGetRatesFromTable(code, httpClient, "A");
@@ -144,7 +144,7 @@ namespace ExchangeRatesApp.Client.Data
             }
 
             var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/{startDate.ToString("yyyy-MM-dd")}/{endDate.ToString("yyyy-MM-dd")}";
-            var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+            var response = await httpClient.GetFromJsonAsync<CurrencyRates>(apiUrl);
 
             return response;
         }
@@ -154,7 +154,7 @@ namespace ExchangeRatesApp.Client.Data
             var apiUrl = $"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}";
             try
             {
-                var response = await httpClient.GetFromJsonAsync<ExchangeRatesSeries>(apiUrl);
+                var response = await httpClient.GetFromJsonAsync<CurrencyRates>(apiUrl);
                 if (response != null)
                 {
                     return table;
