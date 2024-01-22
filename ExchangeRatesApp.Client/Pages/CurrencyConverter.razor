@@ -1,82 +1,14 @@
-﻿@page "/currency-calculator"
+﻿@page "/currency-converter"
+
 @using ExchangeRatesApp.Client.Services
 @using ExchangeRatesApp.Client.Helpers
 @using ExchangeRatesApp.Models
 @using Color = MudBlazor.Color;
+
 @inject ICurrencyService CurrencyService
 
 <h3>Konwerter Walutowy</h3>
 
-@* <MudSelect @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-    @if (currencies != null)
-    {
-        @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
-        {
-            <MudSelectItem Value="@(currency.Code)">
-                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" height="14" class="mr-1" /> @currency.Code
-            </MudSelectItem>
-        }
-    }
-</MudSelect>
-
-<MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
-
-<MudSelect @bind-Value="@targetCurrencyCode" Label="Na walutę" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-    @if (currencies != null)
-    {
-        @foreach (var currency in currencies.SelectMany(cr => cr.Rates))
-        {
-            <MudSelectItem Value="@currency.Code">
-                <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" alt="@currency.Code" height="14" class="mr-1" /> @currency.Code
-            </MudSelectItem>
-        }
-    }
-</MudSelect> *@
-
-@* <MudItem xs="12" sm="6" md="4">
-    <MudAutocomplete T="string" Label="Z waluty" @bind-Value="sourceCurrencyCode" SearchFunc="@Search1" Variant="Variant.Outlined" />
-</MudItem>
-
-<MudItem xs="12" sm="6" md="4">
-    <MudAutocomplete T="string" Label="Na walutę" @bind-Value="targetCurrencyCode" SearchFunc="@Search1" Variant="Variant.Outlined" />
-</MudItem> *@
-
-<MudGrid>
-    <MudItem xs="5">
-        <MudAutocomplete @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" SearchFunc="SearchCurrency">
-            @if (uniqueCurrencies != null)
-            {
-                foreach (var currency in uniqueCurrencies)
-                {
-                    <MudSelectItem Value="@currency.Code">
-                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" height="14" class="mr-1" /> @($"{currency.Code} - {currency.Currency}")
-                    </MudSelectItem>
-                }
-            }
-        </MudAutocomplete>
-    </MudItem>
-
-    <MudItem xs="2">
-        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
-    </MudItem>
-
-    <MudItem xs="5">
-        <MudAutocomplete @bind-Value="@targetCurrencyCode" Label="Na walutę" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" SearchFunc="SearchCurrency">
-            @if (uniqueCurrencies != null)
-            {
-                foreach (var currency in uniqueCurrencies)
-                {
-                    <MudSelectItem Value="@currency.Code">
-                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(currency.Code)" height="14" class="mr-1" /> @($"{currency.Code} - {currency.Currency}")
-                    </MudSelectItem>
-                }
-            }
-        </MudAutocomplete>
-    </MudItem>
-</MudGrid>
-
-
-@* BEZ WYSZUKIWANIA *@
 <MudGrid>
     <MudItem xs="5">
         <MudSelect Class="d-flex align-left justify-center" FullWidth="false" @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
@@ -136,17 +68,14 @@
 </MudGrid>
 
 @code {
-    private List<CurrencyRates> currencies;
-    private IEnumerable<Rate> uniqueCurrencies;
+    private List<CurrencyRates>? currencies;
+    private IEnumerable<Rate>? uniqueCurrencies;
     private string sourceCurrencyCode = "";
     private string targetCurrencyCode = "";
-    private string result;
+    private string result = "";
     private bool showResult = false;
 
-    private string selectedSourceCurrency;
-    private string selectedTargetCurrency;
-
-    private decimal amountToConvert = 1.0m; // Domyślna wartość 1.0
+    private decimal amountToConvert = 1.0m;
 
     protected override async Task OnInitializedAsync()
     {
@@ -194,7 +123,7 @@
         string temp = sourceCurrencyCode;
         sourceCurrencyCode = targetCurrencyCode;
         targetCurrencyCode = temp;
-        ConvertCurrency(); // Dodane wywołanie konwersji po zamianie walut
+        ConvertCurrency();
     }
 
     private async Task<IEnumerable<string>> SearchCurrency(string text)
