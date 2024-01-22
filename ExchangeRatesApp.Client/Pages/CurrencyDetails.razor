@@ -10,14 +10,14 @@
 @inject ICurrencyService CurrencyService
 
 
-@if (ExchangeRate != null && ExchangeRate.Rates != null && ExchangeRate.Rates.Any())
+@if (Rate != null && Rate.Rates != null && Rate.Rates.Any())
 {
     <h3 class="d-flex align-items-center">
-        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(ExchangeRate.Code)" alt="@ExchangeRate.Code" width="48" height="48" class="mr-1" />
-        @FirstLetterToUpper(ExchangeRate.Currency) (@ExchangeRate.Code)
+        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(Rate.Code)" alt="@Rate.Code" width="48" height="48" class="mr-1" />
+        @FirstLetterToUpper(Rate.Currency) (@Rate.Code)
     </h3>
-    <h2>@ExchangeRate.Rates[^1].Mid</h2>
-    <h4>@ExchangeRate.Rates[^1].EffectiveDate</h4>
+    <h2>@Rate.Rates[^1].Mid</h2>
+    <h4>@Rate.Rates[^1].EffectiveDate</h4>
     <h6>
         <span>YTD (Year To Date): </span>
         <span style='color: @(YTDPercentage < 0 ? "red" : "green")'>
@@ -25,13 +25,13 @@
         </span>
     </h6>
 
-    <ApexChart TItem="ExchangeRate"
+    <ApexChart TItem="Rate"
                Title="Historia Kursu"
                Options="@options"
                @ref="chart">
 
-        <ApexPointSeries TItem="ExchangeRate"
-                         Items="ExchangeRate.Rates"
+        <ApexPointSeries TItem="Rate"
+                         Items="Rate.Rates"
                          Name="Kurs średni"
                          SeriesType="SeriesType.Line"
                          XValue="rate => rate.EffectiveDate"
@@ -51,7 +51,7 @@
         </PickerActions>
     </MudDateRangePicker>
 
-    <MudTable Items="@ExchangeRate.Rates" Class="mt-4">
+    <MudTable Items="@Rate.Rates" Class="mt-4">
         <HeaderContent>
             <MudTh>Tabela</MudTh>
             <MudTh>Data</MudTh>
@@ -65,12 +65,12 @@
     </MudTable>
 
     @* <div>
-        <h4>@ExchangeRate.Currency</h4>
-        <p>Code: @ExchangeRate.Code</p>
-        <p>Table: @ExchangeRate.Table</p>
+        <h4>@Rate.Currency</h4>
+        <p>Code: @Rate.Code</p>
+        <p>Table: @Rate.Table</p>
         <p>Rates:</p>
         <ul>
-            @foreach (var rate in ExchangeRate.Rates)
+            @foreach (var rate in Rate.Rates)
             {
                 <li>No: @rate.No, Date: @rate.EffectiveDate, Mid: @rate.Mid</li>
             }
@@ -87,10 +87,10 @@ else
     [Parameter]
     public string Code { get; set; }
 
-    private ExchangeRatesSeries ExchangeRate { get; set; }
+    private CurrencyRates Rate { get; set; }
     private DateTime? date { get; set; }
-    private ApexChartOptions<ExchangeRate> options;
-    private ApexChart<ExchangeRate> chart;
+    private ApexChartOptions<Rate> options;
+    private ApexChart<Rate> chart;
 
     private decimal YTDPercentage { get; set; }
 
@@ -100,43 +100,43 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadExchangeRatesForYTD();
-        await LoadExchangeRatesForPeriod(1);
+        await LoadRatesForYTD();
+        await LoadRatesForPeriod(1);
         await base.OnInitializedAsync();
     }
 
-    private async Task LoadExchangeRatesForPeriod(int months)
+    private async Task LoadRatesForPeriod(int months)
     {
         var startDate = DateTime.Now.AddMonths(-months);
         var endDate = DateTime.Now;
-        await LoadExchangeRates(startDate, endDate);
+        await LoadRates(startDate, endDate);
     }
 
-    private async Task LoadExchangeRatesForCustomPeriod()
+    private async Task LoadRatesForCustomPeriod()
     {
         if (_dateRange != null && _dateRange.Start.HasValue && _dateRange.End.HasValue && _picker != null)
         {
             var startDate = _dateRange.Start.Value;
             var endDate = _dateRange.End.Value;
-            await LoadExchangeRates(startDate, endDate);
+            await LoadRates(startDate, endDate);
         }
     }
 
-    private async Task LoadExchangeRates(DateTime startDate, DateTime endDate)
+    private async Task LoadRates(DateTime startDate, DateTime endDate)
     {
         if (CurrencyService == null)
         {
             return;
         }
 
-        ExchangeRate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
+        Rate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
 
-        if (ExchangeRate == null)
+        if (Rate == null)
         {
             return;
         }
 
-        options = new ApexChartOptions<ExchangeRate>
+        options = new ApexChartOptions<Rate>
             {
                 Chart = new Chart
                 {
@@ -150,14 +150,14 @@ else
 
     private async Task HandleButtonClick(int months)
     {
-        await LoadExchangeRatesForPeriod(months);
+        await LoadRatesForPeriod(months);
         StateHasChanged();
         await chart.UpdateSeriesAsync(true);
     }
 
     private async Task HandleCustomButtonClick()
     {
-        await LoadExchangeRatesForCustomPeriod();
+        await LoadRatesForCustomPeriod();
         StateHasChanged();
         await chart.UpdateSeriesAsync(true);
     }
@@ -170,7 +170,7 @@ else
         return char.ToUpperInvariant(input[0]) + input.Substring(1);
     }
 
-    private async Task LoadExchangeRatesForYTD()
+    private async Task LoadRatesForYTD()
     {
         var startDateYTD = new DateTime(DateTime.Now.Year, 1, 1);
         var endDateYTD = DateTime.Now;
@@ -193,7 +193,7 @@ else
 
 
 
-    decimal CalculateYTD(List<ExchangeRate> rates)
+    decimal CalculateYTD(List<Rate> rates)
     {
         if (rates == null || rates.Count == 0)
         {
