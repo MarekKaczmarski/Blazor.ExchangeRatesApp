@@ -12,8 +12,14 @@ namespace ExchangeRatesApp.Models
 {
     public class Rate
     {
-        public string Currency { get; set; } = string.Empty;
-        public string Code { get; set; } = string.Empty;
+        public string? Currency { get; set; } = string.Empty;
+        public string? Code { get; set; } = string.Empty;
         public decimal Mid { get; set; }
+        public decimal Bid { get; set; }
+        public decimal Ask { get; set; }
+        public string? No { get; set; } = string.Empty;
+        [Display(Name = "EffectiveDate")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime EffectiveDate { get; set; }
     }
 }

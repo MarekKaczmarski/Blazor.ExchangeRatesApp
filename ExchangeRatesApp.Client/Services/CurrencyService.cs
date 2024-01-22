@@ -30,20 +30,20 @@ namespace ExchangeRatesApp.Client.Services
             return await _currencyDataService.GetAllCurrencies(table);
         }
 
-        public async Task<ExchangeRatesSeries> GetLastXCurrencies(string code, int topCount)
+        public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
         {
             return await _currencyDataService.GetLastXCurrencies(code, topCount);
         }
 
-        public async Task<ExchangeRatesSeries> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
         {
             return await _currencyDataService.TryGetRatesFromTable(httpClient, table, code, topCount);
         }
-        public async Task<ExchangeRatesSeries> GetExchangeRatesOnDate(string code, DateTime date)
+        public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
         {
             return await _currencyDataService.GetExchangeRatesOnDate(code, date);
         }
-        public async Task<ExchangeRatesSeries> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        public async Task<CurrencyRates> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
         {
             return await _currencyDataService.GetExchangeRatesInRange(code, startDate, endDate);
         }
