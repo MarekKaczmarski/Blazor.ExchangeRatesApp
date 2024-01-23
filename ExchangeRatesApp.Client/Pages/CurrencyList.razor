@@ -53,13 +53,13 @@
     private bool bordered = false;
     private string searchString1 = "";
 
-    private List<CurrencyRates> CurrencyRatesList = new List<CurrencyRates>();
+    private List<CurrencyRates> CurrencyRates = new List<CurrencyRates>();
     private List<Rate> Rates = new List<Rate>();
 
     protected override async Task OnInitializedAsync()
     {
-        CurrencyRatesList = await CurrencyService.GetAllCurrenciesFromAllTables();
-        Rates = CurrencyRatesList.SelectMany(currencyRates => currencyRates.Rates).ToList();
+        CurrencyRates = await CurrencyService.GetAllCurrenciesFromAllTables();
+        Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
     }
 
     private bool FilterFunc1(Rate element) => FilterFunc(element, searchString1);
