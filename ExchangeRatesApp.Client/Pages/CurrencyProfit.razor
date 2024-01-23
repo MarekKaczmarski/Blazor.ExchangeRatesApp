@@ -1,7 +1,6 @@
 ﻿@page "/currency-profit"
 
 @using ExchangeRatesApp.Client.Helpers;
-@using ExchangeRatesApp.Models.RatesChooseDate;
 @using Serilog;
 @using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
@@ -113,8 +112,8 @@
     decimal purchaseValue = 0;
     private decimal profit = 0;
 
+    private List<CurrencyRates> CurrencyRates = new List<CurrencyRates>();
     private List<Rate> Rates = new List<Rate>();
-    private List<Rate> selectedCurrencies = new List<Rate>();
 
     private Dictionary<string, DateTime?> selectedCurrencyPurchaseDate = new Dictionary<string, DateTime?>();
     private Dictionary<string, decimal> selectedCurrencyPurchaseValue = new Dictionary<string, decimal>();
@@ -126,7 +125,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Rates = await CurrencyService.GetAllRatesFromAllTables();
+        CurrencyRates = await CurrencyService.GetAllCurrenciesFromAllTables();
+        Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
     }
 
     private async Task CalculateProfit()
