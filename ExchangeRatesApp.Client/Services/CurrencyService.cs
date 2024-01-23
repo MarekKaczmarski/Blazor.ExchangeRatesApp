@@ -1,6 +1,5 @@
 ﻿using ExchangeRatesApp.Client.Data;
 using ExchangeRatesApp.Models;
-using ExchangeRatesApp.Models.RatesChooseDate;
 using static MudBlazor.CategoryTypes;
 using System.Net.Http;
 
@@ -15,10 +14,10 @@ namespace ExchangeRatesApp.Client.Services
             _currencyDataService = currencyDataService;
         }
 
-        public async Task<List<Rate>> GetAllRatesFromAllTables()
-        {
-            return await _currencyDataService.GetAllRatesFromAllTables();
-        }
+        //public async Task<List<Rate>> GetAllRatesFromAllTables()
+        //{
+        //    return await _currencyDataService.GetAllRatesFromAllTables();
+        //}
 
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
@@ -30,15 +29,15 @@ namespace ExchangeRatesApp.Client.Services
             return await _currencyDataService.GetAllCurrencies(table);
         }
 
-        public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
-        {
-            return await _currencyDataService.GetLastXCurrencies(code, topCount);
-        }
+        //public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
+        //{
+        //    return await _currencyDataService.GetLastXCurrencies(code, topCount);
+        //}
 
-        public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
-        {
-            return await _currencyDataService.TryGetRatesFromTable(httpClient, table, code, topCount);
-        }
+        //public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        //{
+        //    return await _currencyDataService.TryGetRatesFromTable(httpClient, table, code, topCount);
+        //}
         public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
         {
             return await _currencyDataService.GetExchangeRatesOnDate(code, date);
