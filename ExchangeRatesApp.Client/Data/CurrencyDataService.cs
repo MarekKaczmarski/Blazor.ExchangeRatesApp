@@ -1,5 +1,4 @@
 ﻿using ExchangeRatesApp.Models;
-using ExchangeRatesApp.Models.RatesChooseDate;
 using Newtonsoft.Json;
 using Serilog;
 using System.Globalization;
@@ -18,23 +17,23 @@ namespace ExchangeRatesApp.Client.Data
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<List<Rate>> GetAllRatesFromAllTables()
-        {
-            var tables = new List<string> { "a", "b" };
-            var allRates = new List<Rate>();
+        //public async Task<List<Rate>> GetAllRatesFromAllTables()
+        //{
+        //    var tables = new List<string> { "a", "b" };
+        //    var allRates = new List<Rate>();
 
-            foreach (var table in tables)
-            {
-                var currencyRates = await GetAllCurrencies(table);
+        //    foreach (var table in tables)
+        //    {
+        //        var currencyRates = await GetAllCurrencies(table);
 
-                foreach (var currencyRate in currencyRates)
-                {
-                    allRates.AddRange(currencyRate.Rates);
-                }
-            }
+        //        foreach (var currencyRate in currencyRates)
+        //        {
+        //            allRates.AddRange(currencyRate.Rates);
+        //        }
+        //    }
 
-            return allRates;
-        }
+        //    return allRates;
+        //}
 
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
@@ -84,30 +83,30 @@ namespace ExchangeRatesApp.Client.Data
             }
         }
 
-        public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
-        {
-            var httpClient = _httpClientFactory.CreateClient("NBPClient");
-            var exchangeRatesA = await TryGetRatesFromTable(httpClient, "A", code, topCount);
+        //public async Task<CurrencyRates> GetLastXCurrencies(string code, int topCount)
+        //{
+        //    var httpClient = _httpClientFactory.CreateClient("NBPClient");
+        //    var exchangeRatesA = await TryGetRatesFromTable(httpClient, "A", code, topCount);
 
-            if (exchangeRatesA == null)
-            {
-                return await TryGetRatesFromTable(httpClient, "B", code, topCount);
-            }
+        //    if (exchangeRatesA == null)
+        //    {
+        //        return await TryGetRatesFromTable(httpClient, "B", code, topCount);
+        //    }
 
-            return exchangeRatesA;
-        }
+        //    return exchangeRatesA;
+        //}
 
-        public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
-        {
-            try
-            {
-                return await httpClient.GetFromJsonAsync<CurrencyRates>($"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/last/{topCount}/");
-            }
-            catch (HttpRequestException)
-            {
-                return null;
-            }
-        }
+        //public async Task<CurrencyRates> TryGetRatesFromTable(HttpClient httpClient, string table, string code, int topCount)
+        //{
+        //    try
+        //    {
+        //        return await httpClient.GetFromJsonAsync<CurrencyRates>($"https://api.nbp.pl/api/exchangerates/rates/{table}/{code}/last/{topCount}/");
+        //    }
+        //    catch (HttpRequestException)
+        //    {
+        //        return null;
+        //    }
+        //}
 
         public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
         {
