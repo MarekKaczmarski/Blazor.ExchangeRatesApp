@@ -33,22 +33,31 @@
                          Items="Rate.Rates"
                          Name="Kurs średni"
                          SeriesType="SeriesType.Line"
-                         XValue="rate => rate.EffectiveDate"
+                         XValue="rate => rate.EffectiveDate.Date.ToShortDateString()"
                          YValue="rate => rate.Mid" />
     </ApexChart>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(1)">1M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(3)">3M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(6)">6M</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(12)">1R</MudButton>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleCustomButtonClick()">WŁASNE</MudButton>
-    <MudDateRangePicker @ref="_picker" Label="Własne" @bind-DateRange="_dateRange" AutoClose="@_autoClose" Clearable="true" DateFormat="yyyy-MM-dd" >
-        <PickerActions>
-            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Wyczyść</MudButton>
-            <MudButton OnClick="@(() => _picker.Close(false))">Anuluj</MudButton>
-            <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
-        </PickerActions>
-    </MudDateRangePicker>
+    <MudPaper Class="d-flex align-center flex-grow-1 gap-2" Elevation="0">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(1)">1M</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(3)">3M</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(6)">6M</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(12)">1Y</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleCustomButtonClick()">WŁASNE</MudButton>
+        <MudDateRangePicker 
+            @ref="_picker"
+            @bind-DateRange="_dateRange"
+            Style="width: 300px"
+            Label="Wybierz przedział czasowy" 
+            AutoClose="@_autoClose" 
+            Clearable="true" 
+            DateFormat="yyyy-MM-dd">
+                <PickerActions>
+                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Wyczyść</MudButton>
+                    <MudButton OnClick="@(() => _picker.Close(false))">Anuluj</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                </PickerActions>
+        </MudDateRangePicker>
+    </MudPaper>
 
     <MudTable Items="@Rate.Rates" Class="mt-4">
         <HeaderContent>
@@ -140,8 +149,13 @@ else
                 Chart = new Chart
                 {
                     Height = 500,
-                    Width = "100%"
-                }
+                    Width = "100%",
+                    Toolbar = new Toolbar
+                    {
+                        Show = false
+                    },  
+                },
+                
             };
         StateHasChanged();
 
