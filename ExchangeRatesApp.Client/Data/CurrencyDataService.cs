@@ -20,6 +20,7 @@ namespace ExchangeRatesApp.Client.Data
         public async Task<List<CurrencyRates>> GetAllCurrencies(string table)
         {
             var httpClient = _httpClientFactory.CreateClient("NBPClient");
+            httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
 
             var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/");
             if (response.IsSuccessStatusCode)
