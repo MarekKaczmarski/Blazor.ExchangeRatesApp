@@ -16,7 +16,9 @@
         @FirstLetterToUpper(Rate.Currency) (@Rate.Code)
     </h3>
     <h2>@Rate.Rates[^1].Mid</h2>
-    <h4>@Rate.Rates[^1].EffectiveDate</h4>
+    <h4>@Rate.Rates[^1].EffectiveDate.ToShortDateString()</h4>
+    <h2>@currentMid</h2>
+    <h4>@currentDate.ToShortDateString()</h4>
     <h6>
         <span>YTD (Year To Date): </span>
         <span style='color: @(YTDPercentage < 0 ? "red" : "green")'>
@@ -71,23 +73,10 @@
             <MudTd>@rate.Mid</MudTd>
         </RowTemplate>
     </MudTable>
-
-    @* <div>
-        <h4>@Rate.Currency</h4>
-        <p>Code: @Rate.Code</p>
-        <p>Table: @Rate.Table</p>
-        <p>Rates:</p>
-        <ul>
-            @foreach (var rate in Rate.Rates)
-            {
-                <li>No: @rate.No, Date: @rate.EffectiveDate, Mid: @rate.Mid</li>
-            }
-        </ul>
-    </div> *@
 }
 else
 {
-    <p>Exchange rate not found for code: @Code</p>
+    <p>Ładowanie...</p>
 }
 
 
@@ -96,6 +85,10 @@ else
     public string Code { get; set; }
 
     private CurrencyRates Rate { get; set; }
+    
+    private DateTime currentDate;
+    private decimal currentMid;
+
     private DateTime? date { get; set; }
     private ApexChartOptions<Rate> options;
     private ApexChart<Rate> chart;
@@ -144,6 +137,12 @@ else
             return;
         }
 
+        if (currentMid == 0 && currentDate == DateTime.MinValue && Rate.Rates.Any())
+        {
+            currentMid = Rate.Rates[^1].Mid;
+            currentDate = Rate.Rates[^1].EffectiveDate;
+        }
+
         options = new ApexChartOptions<Rate>
             {
                 Chart = new Chart
@@ -157,8 +156,6 @@ else
                 },
                 
             };
-        StateHasChanged();
-
     }
 
     private async Task HandleButtonClick(int months)
