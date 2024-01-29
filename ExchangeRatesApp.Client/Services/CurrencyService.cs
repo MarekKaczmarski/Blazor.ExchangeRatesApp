@@ -34,14 +34,14 @@ namespace ExchangeRatesApp.Client.Services
             return await _currencyDataService.GetExchangeRatesInRange(code, startDate, endDate);
         }
 
+        public async Task<string?> GetTable(string code, HttpClient httpClient)
+        {
+            return await _currencyDataService.GetTable(code, httpClient);
+        }
+
         public async Task<string> TryGetRatesFromTable(string code, HttpClient httpClient, string table)
         {
             return await _currencyDataService.TryGetRatesFromTable(code, httpClient, table);
-        }
-
-        public void HandleApiError()
-        {
-            _currencyDataService.HandleApiError();
         }
     }
 }
