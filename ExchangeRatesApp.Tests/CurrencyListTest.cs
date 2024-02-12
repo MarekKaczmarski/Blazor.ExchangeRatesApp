@@ -24,7 +24,7 @@ namespace ExchangeRatesApp.Tests
         {
             // Arrange
             var currencyServiceMock = new Mock<ICurrencyService>();
-            currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>());
+            //currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>());
 
             var keyInterceptorFactoryMock = new Mock<IKeyInterceptorFactory>();
 
@@ -54,11 +54,11 @@ namespace ExchangeRatesApp.Tests
         {
             // Arrange
             var currencyServiceMock = new Mock<ICurrencyService>();
-            currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>
-            {
-                new Rate { Currency = "Euro", Code = "EUR", Mid = 4.2m },
-                // Add more sample rates as needed
-            });
+            //currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>
+            //{
+            //    new Rate { Currency = "Euro", Code = "EUR", Mid = 4.2m },
+            //    // Add more sample rates as needed
+            //});
 
             var serviceContext = new TestServiceProvider();
             serviceContext.AddSingleton<ICurrencyService>(currencyServiceMock.Object);
@@ -79,12 +79,12 @@ namespace ExchangeRatesApp.Tests
         {
             // Arrange
             var currencyServiceMock = new Mock<ICurrencyService>();
-            currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>
-            {
-                new Rate { Currency = "Euro", Code = "EUR", Mid = 4.2m },
-                new Rate { Currency = "US Dollar", Code = "USD", Mid = 3.5m },
-                // Add more sample rates as needed
-            });
+            //currencyServiceMock.Setup(s => s.GetAllRatesFromAllTables()).ReturnsAsync(new List<Rate>
+            //{
+            //    new Rate { Currency = "Euro", Code = "EUR", Mid = 4.2m },
+            //    new Rate { Currency = "US Dollar", Code = "USD", Mid = 3.5m },
+            //    // Add more sample rates as needed
+            //});
 
             var testContext = new TestContext();
 

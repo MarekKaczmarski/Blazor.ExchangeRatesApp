@@ -1,4 +1,10 @@
-﻿namespace ExchangeRatesApp.Client.Helpers
+﻿using Microsoft.AspNetCore.Components.Web;
+using MudBlazor;
+using Serilog;
+using System.Net.NetworkInformation;
+using static MudBlazor.CategoryTypes;
+
+namespace ExchangeRatesApp.Client.Helpers
 {
     public class ExceptionHandler : Exception
     {
@@ -15,12 +21,12 @@
 
         public static void HandleDeserializationError()
         {
-            throw new ExceptionHandler("Żądanie API nie powiodło się lub odpowiedź nie mogła zostać zdeserializowana");
+            throw new ExceptionHandler("Nie można zdeserializować danych");
         }
 
         public static void HandleNotFound()
         {
-            throw new ExceptionHandler("Nie znaleziono danych");
+            throw new ExceptionHandler("Brak danych");
         }
 
         public static void HandleBadRequest(string message)

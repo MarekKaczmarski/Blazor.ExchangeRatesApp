@@ -1,13 +1,12 @@
 ﻿@page "/currency-detail/{code}"
 
-@using ExchangeRatesApp.Client.Data;
 @using ExchangeRatesApp.Client.Services;
 @using ExchangeRatesApp.Client.Helpers;
 @using ExchangeRatesApp.Models;
 @using Color = MudBlazor.Color
+@inherits MainLayout
 
 @inject ICurrencyService CurrencyService
-
 
 @if (Rate != null && Rate.Rates != null && Rate.Rates.Any())
 {
@@ -15,8 +14,6 @@
         <img src="/images/flags/@CurrencyHelper.GetFlagImageName(Rate.Code)" alt="@Rate.Code" width="48" height="48" class="mr-1" />
         @FirstLetterToUpper(Rate.Currency) (@Rate.Code)
     </h3>
-    <h2>@Rate.Rates[^1].Mid</h2>
-    <h4>@Rate.Rates[^1].EffectiveDate.ToShortDateString()</h4>
     <h2>@currentMid</h2>
     <h4>@currentDate.ToShortDateString()</h4>
     <h6>
@@ -61,6 +58,14 @@
         </MudDateRangePicker>
     </MudPaper>
 
+    if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert bg-danger text-white alert-dismissible">
+            @errorMessage
+            <button  class="btn-close" @onclick="CloseErrorNotification"></button>
+        </div>
+    }
+
     <MudTable Items="@Rate.Rates" Class="mt-4">
         <HeaderContent>
             <MudTh>Tabela</MudTh>
@@ -85,7 +90,7 @@ else
     public string Code { get; set; }
 
     private CurrencyRates Rate { get; set; }
-    
+
     private DateTime currentDate;
     private decimal currentMid;
 
@@ -98,6 +103,8 @@ else
     private MudDateRangePicker _picker;
     private DateRange _dateRange;
     private bool _autoClose;
+
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,32 +137,39 @@ else
             return;
         }
 
-        Rate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
-
-        if (Rate == null)
+        try
         {
-            return;
-        }
+            Rate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
 
-        if (currentMid == 0 && currentDate == DateTime.MinValue && Rate.Rates.Any())
-        {
-            currentMid = Rate.Rates[^1].Mid;
-            currentDate = Rate.Rates[^1].EffectiveDate;
-        }
-
-        options = new ApexChartOptions<Rate>
+            if (Rate == null)
             {
-                Chart = new Chart
+                return;
+            }
+
+            if (currentMid == 0 && currentDate == DateTime.MinValue && Rate.Rates.Any())
+            {
+                currentMid = Rate.Rates[^1].Mid;
+                currentDate = Rate.Rates[^1].EffectiveDate;
+            }
+
+            options = new ApexChartOptions<Rate>
                 {
-                    Height = 500,
-                    Width = "100%",
-                    Toolbar = new Toolbar
+                    Chart = new Chart
                     {
-                        Show = false
-                    },  
-                },
-                
-            };
+                        Height = 500,
+                        Width = "100%",
+                        Toolbar = new Toolbar
+                        {
+                            Show = false
+                        },
+                    },
+
+                };
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
 
     private async Task HandleButtonClick(int months)
@@ -220,6 +234,11 @@ else
         string formattedResult = ytdPercentage.ToString("0.00");
 
         return decimal.Parse(formattedResult);
+    }
+
+    private void CloseErrorNotification()
+    {
+        errorMessage = null;
     }
 }
 
