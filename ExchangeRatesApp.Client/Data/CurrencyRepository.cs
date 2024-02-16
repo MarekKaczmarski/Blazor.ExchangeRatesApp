@@ -8,11 +8,11 @@ using System.Text.Json;
 
 namespace ExchangeRatesApp.Client.Data
 {
-    public class CurrencyDataService
+    public class CurrencyRepository
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public CurrencyDataService(IHttpClientFactory httpClientFactory)
+        public CurrencyRepository(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
         }

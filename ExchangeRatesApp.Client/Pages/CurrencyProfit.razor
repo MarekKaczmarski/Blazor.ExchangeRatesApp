@@ -65,11 +65,11 @@
                                 <strong>
                                 @if (profits[selectedCurrency] >= 0)
                                 {
-                                    <span class="profit" style="color: green;">Zysk:</span>
+                                    <span class="profit" style="color: green;">Zysk: </span>
                                 }
                                 else
                                 {
-                                    <span class="loss" style="color: red;">Strata:</span>
+                                    <span class="loss" style="color: red;">Strata: </span>
                                 }
                                 </strong>
                                 <span class="@ProfitColor(profits[selectedCurrency])">@RoundProfit(profits[selectedCurrency])</span>
@@ -101,11 +101,11 @@
         <strong>
             @if (totalProfit >= 0)
             {
-                <span class="profit" style="color: green;">Ogólny Zysk:</span>
+                <span class="profit" style="color: green;">Ogólny Zysk: </span>
             }
             else
             {
-                <span class="loss" style="color: red;">Ogólna Strata:</span>
+                <span class="loss" style="color: red;">Ogólna Strata: </span>
             }
         </strong>
         <span class="@ProfitColor(totalProfit)">@RoundProfit(totalProfit)</span>

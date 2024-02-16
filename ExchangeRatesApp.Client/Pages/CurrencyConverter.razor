@@ -9,9 +9,9 @@
 
 <h3>Konwerter Walutowy</h3>
 
-<MudGrid>
-    <MudItem xs="5">
-        <MudSelect Class="d-flex align-left justify-center" FullWidth="false" @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+<MudContainer>
+    <MudItem Class="mb-8" xs="8">
+        <MudSelect FullWidth="false" @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" TextChanged="ClearResult" OnClearButtonClick="ClearResult" Clearable>
             @if (uniqueCurrencies != null)
             {
                 foreach (var currency in uniqueCurrencies)
@@ -24,12 +24,12 @@
         </MudSelect>
     </MudItem>
 
-    <MudItem xs="2">
-        <MudNumericField Class="d-flex align-left justify-center" @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
+    <MudItem Class="mb-8" xs="8">
+        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
     </MudItem>
 
-    <MudItem xs="5">
-        <MudSelect Class="d-flex align-left justify-center" FullWidth="false" @bind-Value="@targetCurrencyCode" Label="Na walute" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    <MudItem Class="mb-8" xs="8">
+        <MudSelect FullWidth="false" @bind-Value="@targetCurrencyCode" Label="Na walute" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" TextChanged="ClearResult" OnClearButtonClick="ClearResult" Clearable>
             @if (uniqueCurrencies != null)
             {
                 foreach (var currency in uniqueCurrencies)
@@ -42,37 +42,37 @@
         </MudSelect>
     </MudItem>
 
-    <MudItem xs="12" Class="d-flex align-center justify-center">
+    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
         <MudButton Class="d-flex align-center justify-center" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.SwapHoriz" Color="Color.Primary" OnClick="SwapCurrencies">Zamień</MudButton>
     </MudItem>
 
-    <MudItem xs="12" Class="d-flex align-center justify-center">
+    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
         <MudButton Class="d-flex align-center justify-center" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Calculate" Color="Color.Primary" OnClick="ConvertCurrency">Przewalutuj</MudButton>
     </MudItem>
 
-    <MudItem xs="12" Class="d-flex align-center justify-center">
+    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
         @if (showResult)
         {
             <MudPaper>
-                <div style="font-size: 32px;">
+                <div style="font-size: 24px;">
                     @if (sourceCurrencyCode != null && targetCurrencyCode != null)
                     {
-                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(sourceCurrencyCode)" height="32" class="mr-1" />
+                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(sourceCurrencyCode)" height="24" class="mr-1" />
                         <span >@result</span>
-                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(targetCurrencyCode)" height="32" class="mr-1" />
+                        <img src="/images/flags/@CurrencyHelper.GetFlagImageName(targetCurrencyCode)" height="24" class="mr-1" />
                     }
                 </div>
             </MudPaper>
         }
     </MudItem>
-</MudGrid>
+</MudContainer>
 
 @code {
     private List<CurrencyRates>? currencies;
     private IEnumerable<Rate>? uniqueCurrencies;
     private string sourceCurrencyCode = "";
     private string targetCurrencyCode = "";
-    private string result = "";
+    private string result = string.Empty;
     private bool showResult = false;
 
     private decimal amountToConvert = 1.0m;
@@ -91,7 +91,6 @@
             if (sourceCurrencyCode == targetCurrencyCode)
             {
                 result = "Wybrano dwie takie same waluty.";
-                return;
             }
 
             var sourceCurrency = currencies
@@ -123,7 +122,6 @@
         string temp = sourceCurrencyCode;
         sourceCurrencyCode = targetCurrencyCode;
         targetCurrencyCode = temp;
-        ConvertCurrency();
     }
 
     private async Task<IEnumerable<string>> SearchCurrency(string text)
@@ -152,6 +150,12 @@
         }
 
         return false;
+    }
+
+    private void ClearResult()
+    {
+        result = string.Empty;
+        showResult = false;
     }
 
 }

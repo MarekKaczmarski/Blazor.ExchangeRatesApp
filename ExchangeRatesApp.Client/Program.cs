@@ -28,13 +28,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddMudServices();
 builder.Services.AddMudExtensions();
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("NBPClient", client =>
 {
     client.BaseAddress = new Uri("https://api.nbp.pl/");
 });
-builder.Services.AddTransient<CurrencyDataService>();
-builder.Services.AddTransient<ICurrencyService, CurrencyService>();
+builder.Services.AddSingleton<CurrencyRepository>();
+builder.Services.AddSingleton<ICurrencyService, CurrencyService>();
 
 await builder.Build().RunAsync();

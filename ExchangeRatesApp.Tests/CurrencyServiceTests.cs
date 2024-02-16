@@ -15,12 +15,12 @@ namespace ExchangeRatesApp.Tests
 {
     public class CurrencyServiceTests
     {
-        private readonly Mock<CurrencyDataService> _currencyDataServiceMock;
+        private readonly Mock<CurrencyRepository> _currencyDataServiceMock;
         private readonly ICurrencyService _currencyService;
 
         public CurrencyServiceTests()
         {
-            _currencyDataServiceMock = new Mock<CurrencyDataService>();
+            _currencyDataServiceMock = new Mock<CurrencyRepository>();
             _currencyService = new CurrencyService(_currencyDataServiceMock.Object);
         }
 
