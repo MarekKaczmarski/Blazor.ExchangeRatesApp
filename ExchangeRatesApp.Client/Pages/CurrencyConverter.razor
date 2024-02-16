@@ -10,7 +10,7 @@
 <h3>Konwerter Walutowy</h3>
 
 <MudContainer>
-    <MudItem Class="mb-8" xs="8">
+    <MudItem Class="mb-8" xs="6">
         <MudSelect FullWidth="false" @bind-Value="@sourceCurrencyCode" Label="Z waluty" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" TextChanged="ClearResult" OnClearButtonClick="ClearResult" Clearable>
             @if (uniqueCurrencies != null)
             {
@@ -24,11 +24,11 @@
         </MudSelect>
     </MudItem>
 
-    <MudItem Class="mb-8" xs="8">
-        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" @oninput="ConvertCurrency" />
+    <MudItem Class="mb-8" xs="6">
+        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" RequiredError="Wprowadź warość" TextChanged="ConvertCurrency" @oninput="ConvertCurrency" />
     </MudItem>
 
-    <MudItem Class="mb-8" xs="8">
+    <MudItem Class="mb-8" xs="6">
         <MudSelect FullWidth="false" @bind-Value="@targetCurrencyCode" Label="Na walute" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" TextChanged="ClearResult" OnClearButtonClick="ClearResult" Clearable>
             @if (uniqueCurrencies != null)
             {
@@ -42,15 +42,15 @@
         </MudSelect>
     </MudItem>
 
-    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
+    <MudItem xs="6" Class="d-flex align-center justify-center mb-8 ">
         <MudButton Class="d-flex align-center justify-center" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.SwapHoriz" Color="Color.Primary" OnClick="SwapCurrencies">Zamień</MudButton>
     </MudItem>
 
-    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
+    <MudItem xs="6" Class="d-flex align-center justify-center mb-8 ">
         <MudButton Class="d-flex align-center justify-center" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Calculate" Color="Color.Primary" OnClick="ConvertCurrency">Przewalutuj</MudButton>
     </MudItem>
 
-    <MudItem xs="8" Class="mb-8 d-flex align-center justify-center">
+    <MudItem xs="6" Class="d-flex align-center justify-center mb-8 ">
         @if (showResult)
         {
             <MudPaper>
@@ -70,8 +70,8 @@
 @code {
     private List<CurrencyRates>? currencies;
     private IEnumerable<Rate>? uniqueCurrencies;
-    private string sourceCurrencyCode = "";
-    private string targetCurrencyCode = "";
+    private string sourceCurrencyCode = string.Empty;
+    private string targetCurrencyCode = string.Empty;
     private string result = string.Empty;
     private bool showResult = false;
 
@@ -86,13 +86,8 @@
     private async Task ConvertCurrency()
     {
         showResult = true;
-        if (currencies != null)
+        if (currencies != null && sourceCurrencyCode != null && targetCurrencyCode != null)
         {
-            if (sourceCurrencyCode == targetCurrencyCode)
-            {
-                result = "Wybrano dwie takie same waluty.";
-            }
-
             var sourceCurrency = currencies
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == sourceCurrencyCode);
@@ -124,39 +119,38 @@
         targetCurrencyCode = temp;
     }
 
-    private async Task<IEnumerable<string>> SearchCurrency(string text)
-    {
-        if (currencies == null)
-        {
-            return new List<string>();
-        }
-
-        return await Task.FromResult(currencies
-            .SelectMany(cr => cr.Rates)
-            .Where(rate => rate.Code.Contains(text, StringComparison.InvariantCultureIgnoreCase))
-            .Select(rate => rate.Code));
-    }
-
-    private bool SearchItems(string value, string searchString)
-    {
-        if (searchString == "")
-        {
-            return true;
-        }
-
-        if (value.StartsWith(searchString, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     private void ClearResult()
     {
         result = string.Empty;
         showResult = false;
     }
 
+    // private async Task<IEnumerable<string>> SearchCurrency(string text)
+    // {
+    //     if (currencies == null)
+    //     {
+    //         return new List<string>();
+    //     }
+
+    //     return await Task.FromResult(currencies
+    //         .SelectMany(cr => cr.Rates)
+    //         .Where(rate => rate.Code.Contains(text, StringComparison.InvariantCultureIgnoreCase))
+    //         .Select(rate => rate.Code));
+    // }
+
+    // private bool SearchItems(string value, string searchString)
+    // {
+    //     if (searchString == "")
+    //     {
+    //         return true;
+    //     }
+
+    //     if (value.StartsWith(searchString, StringComparison.CurrentCultureIgnoreCase))
+    //     {
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
 }
 
