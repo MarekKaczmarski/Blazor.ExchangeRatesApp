@@ -154,12 +154,6 @@
 
                 if (purchaseDate.HasValue)
                 {
-                    if (purchaseValue < 0)
-                    {
-                        errorMessage = "Wartość zakupu nie może być mniejsza od 0";
-                        continue;
-                    }
-
                     var currentRate = Rates.FirstOrDefault(r => r.Code == selectedCurrency)?.Mid;
                     if (currentRate == null)
                     {
@@ -216,5 +210,10 @@
     }
 
     private decimal totalProfit => Math.Round(profits.Values.Sum(), 2);
+    private bool FutureDate(DateTime dt)
+    {
+        DateTime today = DateTime.Now.Date;
+        return dt.Date >= today;
+    }
 }
 
