@@ -35,7 +35,7 @@
                          YValue="rate => rate.Mid" />
     </ApexChart>
 
-    <MudPaper Class="d-flex align-center flex-grow-1 gap-2" Elevation="0">
+    <MudPaper Class="d-flex align-start flex-grow-1 gap-2" Elevation="0">
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(1)">1M</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(3)">3M</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="()=>HandleButtonClick(6)">6M</MudButton>
@@ -48,7 +48,8 @@
             Label="Wybierz przedział czasowy" 
             AutoClose="@_autoClose" 
             Clearable="true" 
-            DateFormat="yyyy-MM-dd">
+            DateFormat="yyyy-MM-dd"
+            IsDateDisabledFunc="@FutureDate">
                 <PickerActions>
                     <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Wyczyść</MudButton>
                     <MudButton OnClick="@(() => _picker.Close(false))">Anuluj</MudButton>
@@ -56,13 +57,11 @@
                 </PickerActions>
         </MudDateRangePicker>
     </MudPaper>
-
-    if (!string.IsNullOrEmpty(errorMessage))
+    @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <div class="alert bg-danger text-white alert-dismissible">
-            @errorMessage
-            <button  class="btn-close" @onclick="CloseErrorNotification"></button>
-        </div>
+        <MudPaper Class="d-flex align-start flex-grow-1 gap-4">
+            <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="(() => CloseErrorNotification())">@errorMessage</MudAlert>
+        </MudPaper>
     }
 
     <MudTable Items="@Rate.Rates" Class="mt-4">
@@ -165,10 +164,13 @@ else
 
                 };
         }
-        catch (Exception ex)
+        catch (HttpRequestException)
         {
-            //errorMessage = ex.Message;
-            ExceptionHandler.HandleBadRequest(ex.Message);
+            // errorMessage = ex.Message;
+            // ExceptionHandler.HandleBadRequest(ex.Message);
+
+            errorMessage = "Brak kursów dla podanej daty";
+            return;
         }
     }
 
@@ -238,7 +240,13 @@ else
 
     private void CloseErrorNotification()
     {
-        errorMessage = null;
+        errorMessage = string.Empty;
+    }
+
+    private bool FutureDate(DateTime dt)
+    {
+        DateTime today = DateTime.Now.Date;
+        return dt.Date >= today;
     }
 }
 
