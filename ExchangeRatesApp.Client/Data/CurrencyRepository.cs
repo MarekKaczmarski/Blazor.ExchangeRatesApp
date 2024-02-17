@@ -19,23 +19,21 @@ namespace ExchangeRatesApp.Client.Data
 
         public async Task<List<CurrencyRates>> GetAllCurrencies(string table)
         {
-            using (var httpClient = _httpClientFactory.CreateClient("NBPClient"))
+            try
             {
+                using var httpClient = _httpClientFactory.CreateClient("NBPClient");
                 httpClient.BaseAddress = new Uri("https://api.nbp.pl/");
 
-                try
+                var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await httpClient.GetAsync($"api/exchangerates/tables/{table}/");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadFromJsonAsync<List<CurrencyRates>>();
-                        return content ?? new List<CurrencyRates>();
-                    }
+                    return await response.Content.ReadFromJsonAsync<List<CurrencyRates>>() ?? new List<CurrencyRates>();
                 }
-                catch (HttpRequestException ex)
-                {
-                    ExceptionHandler.HandleBadRequest(ex.Message);
-                }
+            }
+            catch (HttpRequestException ex)
+            {
+                ExceptionHandler.HandleBadRequest(ex.Message);
             }
 
             return new List<CurrencyRates>();
@@ -50,7 +48,6 @@ namespace ExchangeRatesApp.Client.Data
             foreach (var table in tables)
             {
                 var currencyRates = await GetAllCurrencies(table);
-     
                 allCurrencies.AddRange(currencyRates);
             }
 
@@ -68,25 +65,30 @@ namespace ExchangeRatesApp.Client.Data
 
                 if (table == "a")
                 {
-                    currencyRates.Insert(0, new CurrencyRates
-                    {
-                        Table = table,
-                        Rates = new List<Rate>
-                        {
-                            new Rate
-                            {
-                                Currency = "polski złoty",
-                                Code = "PLN",
-                                Mid = 1.0m
-                            }
-                        }
-                    });
+                    currencyRates.Insert(0, CreatePLNCurrencyRates(table));
                 }
 
                 allCurrencies.AddRange(currencyRates);
             }
 
             return allCurrencies;
+        }
+
+        private CurrencyRates CreatePLNCurrencyRates(string table)
+        {
+            return new CurrencyRates
+            {
+                Table = table,
+                Rates = new List<Rate>
+                {
+                    new Rate
+                    {
+                        Currency = "polski złoty",
+                        Code = "PLN",
+                        Mid = 1.0m
+                    }
+                }
+            };
         }
 
 
