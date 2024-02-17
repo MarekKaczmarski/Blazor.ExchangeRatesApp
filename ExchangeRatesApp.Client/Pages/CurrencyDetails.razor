@@ -167,7 +167,8 @@ else
         }
         catch (Exception ex)
         {
-            errorMessage = ex.Message;
+            //errorMessage = ex.Message;
+            ExceptionHandler.HandleBadRequest(ex.Message);
         }
     }
 
