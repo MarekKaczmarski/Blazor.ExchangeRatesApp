@@ -4,14 +4,10 @@ using ExchangeRatesApp.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog;
-using Serilog.Core;
 using Serilog.Debugging;
-using Serilog.Extensions.Logging;
 using MudBlazor.Services;
 using MudExtensions.Services;
 using Blazored.LocalStorage;
-using ApexCharts;
-using ExchangeRatesApp.Client.Helpers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
