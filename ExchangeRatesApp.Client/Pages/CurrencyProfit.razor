@@ -13,10 +13,14 @@
 
 <MudItem xs="4">
     <MudSelect Class="d-flex align-left justify-center" 
-               FullWidth="false" MultiSelection="true" @bind-SelectedValues="options" 
-               Label="Wybierz waluty" Variant="Variant.Outlined" 
+               FullWidth="false" 
+               MultiSelection="true" 
+               @bind-SelectedValues="options" 
+               Label="Wybierz waluty" 
+               Variant="Variant.Outlined" 
                Clearable="true" 
                AnchorOrigin="Origin.BottomCenter">
+
         @if (Rates != null)
         {
             foreach (var rate in Rates)
@@ -54,7 +58,7 @@
                                         IsDateDisabledFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 || (int)dt.DayOfWeek == 6))" 
                                         @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
                         <MudNumericField Label="Wartość zakupu (PLN)" 
-                                            @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" />
+                                        @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" Pattern="[0-9]" Clearable/>
                     </MudItem>
 
                     <MudText>
@@ -62,21 +66,18 @@
                         {
                             @if (profits.ContainsKey(selectedCurrency))
                             {
-                                <strong>
                                 @if (profits[selectedCurrency] >= 0)
                                 {
-                                    <span class="profit" style="color: green;">Zysk: </span>
+                                        <MudAlert Severity="Severity.Success">Zysk: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
                                 }
                                 else
                                 {
-                                    <span class="loss" style="color: red;">Strata: </span>
-                                }
-                                </strong>
-                                <span class="@ProfitColor(profits[selectedCurrency])">@RoundProfit(profits[selectedCurrency])</span>
+                                        <MudAlert Severity="Severity.Error">Strata: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
+                                }                              
                             }
                             else
                             {
-                                <strong>Brak danych dla wybranej waluty</strong>
+                                <MudAlert Severity="Severity.Error">Brak danych dla wybranej waluty</MudAlert>
                             }
                         }
                     </MudText>
@@ -94,21 +95,19 @@
 <MudText>
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <span class="error">@errorMessage</span>
+        <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
     }
     else if (profitCalculated && profits.Any())
     {
-        <strong>
             @if (totalProfit >= 0)
             {
-                <span class="profit" style="color: green;">Ogólny Zysk: </span>
+                <MudAlert Severity="Severity.Success">Całkowity zysk: @totalProfit</MudAlert>
             }
             else
             {
-                <span class="loss" style="color: red;">Ogólna Strata: </span>
+                <MudAlert Severity="Severity.Success">Całkowita strata: @totalProfit</MudAlert>
             }
-        </strong>
-        <span class="@ProfitColor(totalProfit)">@RoundProfit(totalProfit)</span>
+       
     }
 </MudText>
 
@@ -139,7 +138,7 @@
 
     private async Task CalculateProfit()
     {
-        CurrencyRates exchangeRates = null;
+        CurrencyRates exchangeRates;
 
         errorMessage = string.Empty;
         profitCalculated = false;
@@ -216,8 +215,6 @@
 
     }
 
-    private decimal RoundProfit(decimal profit) => Math.Round(profit, 2);
     private decimal totalProfit => Math.Round(profits.Values.Sum(), 2);
-    private string ProfitColor(decimal profit) => profit >= 0 ? "profit" : "loss";
 }
 

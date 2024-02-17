@@ -25,7 +25,7 @@
     </MudItem>
 
     <MudItem Class="mb-8" xs="6">
-        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" RequiredError="Wprowadź warość" TextChanged="ConvertCurrency" @oninput="ConvertCurrency" />
+        <MudNumericField @bind-Value="amountToConvert" Label="Wprowadź wartość" Variant="Variant.Outlined" RequiredError="Wprowadź warość" Pattern="[0-9]" TextChanged="ConvertCurrency" @oninput="ConvertCurrency" Clearable/>
     </MudItem>
 
     <MudItem Class="mb-8" xs="6">
@@ -55,7 +55,7 @@
         {
             <MudPaper>
                 <div style="font-size: 24px;">
-                    @if (sourceCurrencyCode != null && targetCurrencyCode != null)
+                    @if (sourceCurrencyCode != null && amountToConvert !=0 && targetCurrencyCode != null)
                     {
                         <img src="/images/flags/@CurrencyHelper.GetFlagImageName(sourceCurrencyCode)" height="24" class="mr-1" />
                         <span >@result</span>
@@ -79,11 +79,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        currencies = await CurrencyService.GetAllCurrenciesFromAllTables();
+        currencies = await CurrencyService.GetAllCurrenciesFromAllTablesWithPLN();
         uniqueCurrencies = currencies.SelectMany(cr => cr.Rates).GroupBy(rate => rate.Code).Select(group => group.First());
     }
 
-    private async Task ConvertCurrency()
+    private void ConvertCurrency()
     {
         showResult = true;
         if (currencies != null && sourceCurrencyCode != null && targetCurrencyCode != null)
@@ -96,7 +96,7 @@
                 .SelectMany(cr => cr.Rates)
                 .FirstOrDefault(rate => rate.Code == targetCurrencyCode);
 
-            if (sourceCurrency != null && targetCurrency != null)
+            if (sourceCurrency != null && amountToConvert != 0 && targetCurrency != null)
             {
                 var convertedAmount = CalculateConvertedAmount(sourceCurrency, targetCurrency);
                 result = $"{amountToConvert} {sourceCurrencyCode} = {convertedAmount} {targetCurrencyCode}";

@@ -24,6 +24,11 @@ namespace ExchangeRatesApp.Client.Services
             return await _currencyRepository.GetAllCurrenciesFromAllTables();
         }
 
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTablesWithPLN()
+        {
+            return await _currencyRepository.GetAllCurrenciesFromAllTablesWithPLN();
+        }
+
         public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
         {
             return await _currencyRepository.GetExchangeRatesOnDate(code, date);
