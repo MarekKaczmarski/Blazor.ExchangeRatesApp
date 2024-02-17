@@ -50,6 +50,21 @@ namespace ExchangeRatesApp.Client.Data
             foreach (var table in tables)
             {
                 var currencyRates = await GetAllCurrencies(table);
+     
+                allCurrencies.AddRange(currencyRates);
+            }
+
+            return allCurrencies;
+        }
+
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTablesWithPLN()
+        {
+            var tables = new List<string> { "a", "b" };
+            var allCurrencies = new List<CurrencyRates>();
+
+            foreach (var table in tables)
+            {
+                var currencyRates = await GetAllCurrencies(table);
 
                 if (table == "a")
                 {
