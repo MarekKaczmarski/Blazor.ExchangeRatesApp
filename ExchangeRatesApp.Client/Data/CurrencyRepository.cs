@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace ExchangeRatesApp.Client.Data
 {
-    public class CurrencyRepository
+    public class CurrencyRepository : ICurrencyRepository
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private const string BaseApiUrl = "https://api.nbp.pl/";
@@ -98,7 +98,6 @@ namespace ExchangeRatesApp.Client.Data
                 }
             };
         }
-
 
         public async Task<CurrencyRates?> GetExchangeRatesOnDate(string code, DateTime date)
         {
