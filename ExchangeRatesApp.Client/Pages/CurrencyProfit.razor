@@ -54,15 +54,21 @@
                     </MudItem>
 
                     <MudItem xs="6">
-                        <MudDatePicker Label="Data zakupu" 
-                                        IsDateDisabledFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 || (int)dt.DayOfWeek == 6))" 
-                                        @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
+                        <MudDatePicker Label="Data zakupu"
+                                         Clearable
+                                         IsDateDisabledFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 || (int)dt.DayOfWeek == 6))"
+                                         @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
                         <MudNumericField Label="Wartość zakupu (PLN)" 
-                                        @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" Pattern="[0-9]" Clearable/>
+                                         @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" Pattern="[0-9]" Clearable/>
                     </MudItem>
 
                     <MudText>
-                        @if (profitCalculated)
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+                        }
+                        
+                        else if (profitCalculated)
                         {
                             @if (profits.ContainsKey(selectedCurrency))
                             {
@@ -105,7 +111,7 @@
             }
             else
             {
-                <MudAlert Severity="Severity.Success">Całkowita strata: @totalProfit</MudAlert>
+                <MudAlert Severity="Severity.Error">Całkowita strata: @totalProfit</MudAlert>
             }
        
     }
