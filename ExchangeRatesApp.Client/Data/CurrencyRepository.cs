@@ -47,7 +47,6 @@ namespace ExchangeRatesApp.Client.Data
             return new List<CurrencyRates>();
         }
 
-
         public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
         {
             var tables = new List<string> { "a", "b" };
