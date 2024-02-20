@@ -1,9 +1,9 @@
-﻿using ExchangeRatesApp.Client.Data;
-using ExchangeRatesApp.Models;
+﻿using CurrencyApplication.Client.Data;
+using CurrencyApplication.Models;
 using static MudBlazor.CategoryTypes;
 using System.Net.Http;
 
-namespace ExchangeRatesApp.Client.Services
+namespace CurrencyApplication.Client.Services
 {
     public class CurrencyService : ICurrencyService
     {

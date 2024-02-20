@@ -1,4 +1,4 @@
-﻿namespace ExchangeRatesApp.Client.Helpers
+﻿namespace CurrencyApplication.Client.Helpers
 {
     public static class CurrencyHelper
     {

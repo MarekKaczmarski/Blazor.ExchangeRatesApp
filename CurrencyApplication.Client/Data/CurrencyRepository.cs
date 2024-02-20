@@ -1,12 +1,12 @@
-﻿using ExchangeRatesApp.Client.Helpers;
-using ExchangeRatesApp.Models;
+﻿using CurrencyApplication.Client.Helpers;
+using CurrencyApplication.Models;
 using Serilog;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace ExchangeRatesApp.Client.Data
+namespace CurrencyApplication.Client.Data
 {
     public class CurrencyRepository : ICurrencyRepository
     {

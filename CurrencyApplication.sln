@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Client", "ExchangeRatesApp.Client\ExchangeRatesApp.Client.csproj", "{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeRatesApp.Tests", "ExchangeRatesApp.Tests\ExchangeRatesApp.Tests.csproj", "{5D9DBC1D-2816-4320-AAED-CE9DF113B313}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurrencyApplication.Client", "CurrencyApplication.Client\CurrencyApplication.Client.csproj", "{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E8242EC-7C67-4DAD-AC75-21A4CFD55446}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D9DBC1D-2816-4320-AAED-CE9DF113B313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D9DBC1D-2816-4320-AAED-CE9DF113B313}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D9DBC1D-2816-4320-AAED-CE9DF113B313}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D9DBC1D-2816-4320-AAED-CE9DF113B313}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,7 +4,7 @@ using Serilog;
 using System.Net.NetworkInformation;
 using static MudBlazor.CategoryTypes;
 
-namespace ExchangeRatesApp.Client.Helpers
+namespace CurrencyApplication.Client.Helpers
 {
     public class ExceptionHandler : Exception
     {

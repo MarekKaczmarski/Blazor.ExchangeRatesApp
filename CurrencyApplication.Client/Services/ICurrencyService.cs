@@ -1,8 +1,8 @@
-﻿using ExchangeRatesApp.Models;
+﻿using CurrencyApplication.Models;
 
-namespace ExchangeRatesApp.Client.Data
+namespace CurrencyApplication.Client.Services
 {
-    public interface ICurrencyRepository
+    public interface ICurrencyService
     {
         Task<List<CurrencyRates>> GetAllCurrencies(string table);
         Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables();

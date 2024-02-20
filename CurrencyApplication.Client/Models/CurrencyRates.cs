@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExchangeRatesApp.Models
+namespace CurrencyApplication.Models
 {
     public class CurrencyRates
     {
@@ -20,7 +20,7 @@ namespace ExchangeRatesApp.Models
 
         [Display(Name = "EffectiveDate")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string? EffectiveDate { get; set; } = string.Empty;
+        public DateTime? EffectiveDate { get; set; }
         public List<Rate> Rates { get; set; } = new List<Rate>();
     }
 }

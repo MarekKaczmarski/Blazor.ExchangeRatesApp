@@ -1,6 +1,6 @@
-using ExchangeRatesApp.Client;
-using ExchangeRatesApp.Client.Data;
-using ExchangeRatesApp.Client.Services;
+using CurrencyApplication.Client;
+using CurrencyApplication.Client.Data;
+using CurrencyApplication.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Serilog;
@@ -30,7 +30,7 @@ builder.Services.AddHttpClient("NBPClient", client =>
 {
     client.BaseAddress = new Uri("https://api.nbp.pl/");
 });
-builder.Services.AddSingleton<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 await builder.Build().RunAsync();
