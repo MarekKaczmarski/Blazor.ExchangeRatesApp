@@ -19,24 +19,24 @@ namespace CurrencyApplication.Client.Services
             return await _currencyRepository.GetAllCurrencies(table);
         }
 
-        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromTables()
         {
-            return await _currencyRepository.GetAllCurrenciesFromAllTables();
+            return await _currencyRepository.GetAllCurrenciesFromTables();
         }
 
-        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTablesWithPLN()
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromTablesWithPLN()
         {
-            return await _currencyRepository.GetAllCurrenciesFromAllTablesWithPLN();
+            return await _currencyRepository.GetAllCurrenciesFromTablesWithPLN();
         }
 
-        public async Task<CurrencyRates> GetExchangeRatesOnDate(string code, DateTime date)
+        public async Task<CurrencyRates> GetCurrencyRatesOnDate(string code, DateTime date)
         {
-            return await _currencyRepository.GetExchangeRatesOnDate(code, date);
+            return await _currencyRepository.GetCurrencyRatesOnDate(code, date);
         }
 
-        public async Task<CurrencyRates> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        public async Task<CurrencyRates> GetCurrencyRatesInRange(string code, DateTime startDate, DateTime endDate)
         {
-            return await _currencyRepository.GetExchangeRatesInRange(code, startDate, endDate);
+            return await _currencyRepository.GetCurrencyRatesInRange(code, startDate, endDate);
         }
 
         public async Task<string?> GetTable(string code, HttpClient httpClient)

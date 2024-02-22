@@ -30,7 +30,7 @@ builder.Services.AddHttpClient("NBPClient", client =>
 {
     client.BaseAddress = new Uri("https://api.nbp.pl/");
 });
-builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddSingleton<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddSingleton<ICurrencyService, CurrencyService>();
 
 await builder.Build().RunAsync();

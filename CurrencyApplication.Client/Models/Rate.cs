@@ -15,6 +15,7 @@ namespace CurrencyApplication.Models
         public string? Code { get; set; } = string.Empty;
         public decimal Mid { get; set; }
         public string? No { get; set; } = string.Empty;
+
         [Display(Name = "EffectiveDate")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EffectiveDate { get; set; }

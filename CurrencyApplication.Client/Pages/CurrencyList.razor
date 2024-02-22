@@ -58,7 +58,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        CurrencyRates = await CurrencyService.GetAllCurrenciesFromAllTables();
+        CurrencyRates = await CurrencyService.GetAllCurrenciesFromTables();
         Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
     }
 

@@ -14,10 +14,6 @@ namespace CurrencyApplication.Models
         public string? Code { get; set; } = string.Empty;
         public string? No { get; set; } = string.Empty;
 
-        [Display(Name = "TradingDate")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public string? TradingDate { get; set; } = string.Empty;
-
         [Display(Name = "EffectiveDate")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? EffectiveDate { get; set; }

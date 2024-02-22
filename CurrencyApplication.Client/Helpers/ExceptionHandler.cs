@@ -31,14 +31,7 @@ namespace CurrencyApplication.Client.Helpers
 
         public static void HandleBadRequest(string message)
         {
-            if (message.Contains("Przekroczony limit 367 dni", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ExceptionHandler("Przekroczony limit 367 dni");
-            }
-            else
-            {
-                throw new ExceptionHandler("Błąd 400 Bad Request: " + message);
-            }
+            throw new ExceptionHandler("Błąd 400 Bad Request: " + message);
         }
     }
 }

@@ -11,6 +11,7 @@
 
 @inject ICurrencyService CurrencyService
 
+<h3>Inwestycje Walutowe</h3>
 <MudItem xs="4">
     <MudSelect Class="d-flex align-left justify-center" 
                FullWidth="false" 
@@ -56,19 +57,14 @@
                     <MudItem xs="6">
                         <MudDatePicker Label="Data zakupu"
                                          Clearable
-                                         IsDateDisabledFunc="@((DateTime dt)=>((int)dt.DayOfWeek == 0 || (int)dt.DayOfWeek == 6))"
+                                         IsDateDisabledFunc="@FutureDate"
                                          @bind-Date="@selectedCurrencyPurchaseDate[selectedCurrency]" />
                         <MudNumericField Label="Wartość zakupu (PLN)" 
                                          @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" Pattern="[0-9]" Clearable/>
                     </MudItem>
 
-                    <MudText>
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
-                        }
-                        
-                        else if (profitCalculated)
+                     <MudText Class="d-flex align-start flex-grow-1 gap-4" xs="6">
+                        @if (profitCalculated)
                         {
                             @if (profits.ContainsKey(selectedCurrency))
                             {
@@ -80,10 +76,6 @@
                                 {
                                         <MudAlert Severity="Severity.Error">Strata: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
                                 }                              
-                            }
-                            else
-                            {
-                                <MudAlert Severity="Severity.Error">Brak danych dla wybranej waluty</MudAlert>
                             }
                         }
                     </MudText>
@@ -98,7 +90,7 @@
     <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Wallet" Color="Color.Primary" OnClick="@CalculateProfit">Oblicz Zysk/Stratę</MudButton>
 </MudItem>
 
-<MudText>
+<MudText Class="d-flex align-start flex-grow-1 gap-4" xs="6">
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
@@ -138,7 +130,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        CurrencyRates = await CurrencyService.GetAllCurrenciesFromAllTables();
+        CurrencyRates = await CurrencyService.GetAllCurrenciesFromTables();
         Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
     }
 
@@ -168,7 +160,7 @@
 
                     try 
                     {
-                        exchangeRates = await CurrencyService.GetExchangeRatesOnDate(selectedCurrency, purchaseDate.Value);
+                        exchangeRates = await CurrencyService.GetCurrencyRatesOnDate(selectedCurrency, purchaseDate.Value);
 
                         if (exchangeRates == null || exchangeRates.Rates == null || !exchangeRates.Rates.Any())
                         {
@@ -218,8 +210,22 @@
     private decimal totalProfit => Math.Round(profits.Values.Sum(), 2);
     private bool FutureDate(DateTime dt)
     {
-        DateTime today = DateTime.Now.Date;
-        return dt.Date >= today;
+        return CheckFutureDateWithNoWeekends(dt);
+    }
+
+    private bool CheckFutureDateWithNoWeekends(DateTime dt)
+    {
+        if (dt > DateTime.Today)
+        {
+            return true; 
+        }
+
+        if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)
+        {
+            return true; 
+        }
+
+        return false;
     }
 }
 

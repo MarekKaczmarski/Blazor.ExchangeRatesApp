@@ -137,7 +137,7 @@ else
 
         try
         {
-            Rate = await CurrencyService.GetExchangeRatesInRange(Code, startDate, endDate);
+            Rate = await CurrencyService.GetCurrencyRatesInRange(Code, startDate, endDate);
 
             if (Rate == null)
             {
@@ -166,9 +166,6 @@ else
         }
         catch (HttpRequestException)
         {
-            // errorMessage = ex.Message;
-            // ExceptionHandler.HandleBadRequest(ex.Message);
-
             errorMessage = "Brak kursów dla podanej daty";
             return;
         }
@@ -201,7 +198,7 @@ else
         var startDateYTD = new DateTime(DateTime.Now.Year, 1, 1);
         var endDateYTD = DateTime.Now;
 
-        var ratesForYTD = await CurrencyService.GetExchangeRatesInRange(Code, startDateYTD, endDateYTD);
+        var ratesForYTD = await CurrencyService.GetCurrencyRatesInRange(Code, startDateYTD, endDateYTD);
 
         if (ratesForYTD == null || ratesForYTD.Rates == null || ratesForYTD.Rates.Count == 0)
         {
@@ -245,8 +242,12 @@ else
 
     private bool FutureDate(DateTime dt)
     {
-        DateTime today = DateTime.Now.Date;
-        return dt.Date >= today;
+        // DateTime today = DateTime.Now.Date;
+        // return dt.Date > today;
+
+        DateTime data = new DateTime(2024, 02, 16);
+        return dt.Date > data;
     }
+
 }
 

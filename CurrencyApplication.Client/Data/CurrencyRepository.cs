@@ -47,7 +47,7 @@ namespace CurrencyApplication.Client.Data
             return new List<CurrencyRates>();
         }
 
-        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTables()
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromTables()
         {
             var tables = new List<string> { "a", "b" };
             var allCurrencies = new List<CurrencyRates>();
@@ -61,22 +61,12 @@ namespace CurrencyApplication.Client.Data
             return allCurrencies;
         }
 
-        public async Task<List<CurrencyRates>> GetAllCurrenciesFromAllTablesWithPLN()
+        public async Task<List<CurrencyRates>> GetAllCurrenciesFromTablesWithPLN()
         {
-            var tables = new List<string> { "a", "b" };
-            var allCurrencies = new List<CurrencyRates>();
+            var allCurrencies = await GetAllCurrenciesFromTables();
 
-            foreach (var table in tables)
-            {
-                var currencyRates = await GetAllCurrencies(table);
-
-                if (table == "a")
-                {
-                    currencyRates.Insert(0, CreatePLNCurrencyRates(table));
-                }
-
-                allCurrencies.AddRange(currencyRates);
-            }
+            var plnCurrencyRates = CreatePLNCurrencyRates("a");
+            allCurrencies.Insert(0, plnCurrencyRates);
 
             return allCurrencies;
         }
@@ -98,7 +88,7 @@ namespace CurrencyApplication.Client.Data
             };
         }
 
-        public async Task<CurrencyRates?> GetExchangeRatesOnDate(string code, DateTime date)
+        public async Task<CurrencyRates?> GetCurrencyRatesOnDate(string code, DateTime date)
         {
             using var httpClient = ConfigureHttpClient();
             var table = await GetTable(code, httpClient);
@@ -119,7 +109,7 @@ namespace CurrencyApplication.Client.Data
             return result;
         }
 
-        public async Task<CurrencyRates?> GetExchangeRatesInRange(string code, DateTime startDate, DateTime endDate)
+        public async Task<CurrencyRates?> GetCurrencyRatesInRange(string code, DateTime startDate, DateTime endDate)
         {
             using var httpClient = ConfigureHttpClient();
             var table = await GetTable(code, httpClient);
