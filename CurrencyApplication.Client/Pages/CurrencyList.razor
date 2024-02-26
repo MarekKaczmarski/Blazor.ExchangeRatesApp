@@ -11,50 +11,44 @@
 @inject ICurrencyService CurrencyService
 
 <MudContainer>
-        @if (Rates == null)
-        {
-            <MudTypography Variant="TypographyVariant.h6" Class="mt-4" Color="Color.Primary">
-                Ładowanie listy walut...
-            </MudTypography>
-        }
-        else
-        {
-        <MudTable Items="@Rates" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<Rate,bool>(FilterFunc1)" SortLabel="Sort By" AllowUnsorted="false">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Waluty</MudText>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString1" Placeholder="Szukaj" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Rate, object>(x=>x.Currency)">Nazwa waluty</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Code)">Kod waluty</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Mid)">Średni kurs</MudTableSortLabel></MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd>
-                    <MudLink Href="@($"/currency-detail/{context.Code}")">
-                        <MudImage Src="@($"/images/flags/{context.Code.ToLower()}.png")" Width="24" Height="24" Alt="@context.Currency" Elevation="25" />@context.Currency
-                    </MudLink>
-                </MudTd>
-                <MudTd DataLabel="Code">@context.Code</MudTd>
-                <MudTd DataLabel="Mid">@context.Mid</MudTd>
-            </RowTemplate>
-        </MudTable>
-
-        }
-
+    @if (Rates == null)
+    {
+        <MudText>
+            Ładowanie listy walut...
+        </MudText>
+    }
+    else
+    {
+    <MudTable Items="@Rates" Filter="new Func<Rate,bool>(FilterFunc1)" SortLabel="Sort By" AllowUnsorted="false">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Waluty</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Szukaj" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Rate, object>(x=>x.Currency)">Nazwa waluty</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Code)">Kod waluty</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Mid)">Średni kurs</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudLink Href="@($"/currency-detail/{context.Code}")">
+                    <MudImage Src="@($"/images/flags/{context.Code.ToLower()}.png")" Width="24" Height="24" Alt="@context.Currency" Elevation="25" />@context.Currency
+                </MudLink>
+            </MudTd>
+            <MudTd DataLabel="Code">@context.Code</MudTd>
+            <MudTd DataLabel="Mid">@context.Mid</MudTd>
+        </RowTemplate>
+    </MudTable>
+    }
 </MudContainer>
 
 
 @code {
-    private bool dense = false;
-    private bool hover = true;
-    private bool striped = false;
-    private bool bordered = false;
-    private string searchString1 = "";
-
     private List<CurrencyRates> CurrencyRates = new List<CurrencyRates>();
     private List<Rate> Rates = new List<Rate>();
+
+    private string searchString = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,7 +56,7 @@
         Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
     }
 
-    private bool FilterFunc1(Rate element) => FilterFunc(element, searchString1);
+    private bool FilterFunc1(Rate element) => FilterFunc(element, searchString);
 
     private bool FilterFunc(Rate element, string searchString)
     {
