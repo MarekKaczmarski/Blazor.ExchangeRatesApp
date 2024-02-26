@@ -63,7 +63,6 @@
             <MudAlert Severity="Severity.Error" ShowCloseIcon="true" CloseIconClicked="(() => CloseErrorNotification())">@errorMessage</MudAlert>
         </MudPaper>
     }
-
     <MudTable Items="@Rate.Rates" Class="mt-4">
         <HeaderContent>
             <MudTh>Tabela</MudTh>
@@ -85,24 +84,24 @@ else
 
 @code {
     [Parameter]
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
-    private CurrencyRates Rate { get; set; }
+    private CurrencyRates? Rate { get; set; }
 
     private DateTime currentDate;
     private decimal currentMid;
 
     private DateTime? date { get; set; }
-    private ApexChartOptions<Rate> options;
-    private ApexChart<Rate> chart;
+    private ApexChartOptions<Rate>? options;
+    private ApexChart<Rate>? chart;
 
     private decimal YTDPercentage { get; set; }
 
-    private MudDateRangePicker _picker;
-    private DateRange _dateRange;
+    private MudDateRangePicker? _picker;
+    private DateRange? _dateRange;
     private bool _autoClose;
 
-    private string errorMessage;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -164,10 +163,17 @@ else
 
                 };
         }
-        catch (HttpRequestException)
+        catch (HttpResponseMessage ex)
         {
             errorMessage = "Brak kursów dla podanej daty";
-            return;
+            // return;
+            // Console.WriteLine(ex.Data);
+            // Console.WriteLine(ex.HResult);
+            // Console.WriteLine(ex.Message);
+            // Console.WriteLine(ex.StackTrace);
+            // Console.WriteLine(ex.StatusCode);
+            // Console.WriteLine(ex.Source);
+            Console.WriteLine(ex.Content);
         }
     }
 
@@ -214,8 +220,6 @@ else
         YTDPercentage = percentageChange;
     }
 
-
-
     decimal CalculateYTD(List<Rate> rates)
     {
         if (rates == null || rates.Count == 0)
@@ -242,11 +246,8 @@ else
 
     private bool FutureDate(DateTime dt)
     {
-        // DateTime today = DateTime.Now.Date;
-        // return dt.Date > today;
-
-        DateTime data = new DateTime(2024, 02, 16);
-        return dt.Date > data;
+        DateTime today = DateTime.Now.Date;
+        return dt.Date > today;
     }
 
 }
