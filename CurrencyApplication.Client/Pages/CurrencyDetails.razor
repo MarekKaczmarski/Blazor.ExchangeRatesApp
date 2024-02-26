@@ -78,7 +78,7 @@
 }
 else
 {
-    <p>Ładowanie...</p>
+    <MudText>Ładowanie...</MudText>
 }
 
 
@@ -163,17 +163,9 @@ else
 
                 };
         }
-        catch (HttpResponseMessage ex)
+        catch (Exception ex)
         {
-            errorMessage = "Brak kursów dla podanej daty";
-            // return;
-            // Console.WriteLine(ex.Data);
-            // Console.WriteLine(ex.HResult);
-            // Console.WriteLine(ex.Message);
-            // Console.WriteLine(ex.StackTrace);
-            // Console.WriteLine(ex.StatusCode);
-            // Console.WriteLine(ex.Source);
-            Console.WriteLine(ex.Content);
+            errorMessage = ex.Message + "Brak kursów dla podanego przedziału czasowego";           
         }
     }
 

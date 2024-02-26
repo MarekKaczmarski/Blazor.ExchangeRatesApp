@@ -16,7 +16,7 @@
     <MudSelect Class="d-flex align-left justify-center" 
                FullWidth="false" 
                MultiSelection="true" 
-               @bind-SelectedValues="options" 
+               @bind-SelectedValues="selectedRates" 
                Label="Wybierz waluty" 
                Variant="Variant.Outlined" 
                Clearable="true" 
@@ -37,7 +37,7 @@
 <MudGrid Class="mt-6 px-4">
     <MudItem xs="6">
         <MudText Typo="Typo.subtitle2">Wybrane waluty:</MudText>
-        @foreach (var selectedCurrency in options)
+        @foreach (var selectedCurrency in selectedRates)
         {
             var rate = Rates.FirstOrDefault(r => r.Code == selectedCurrency);
             if (rate != null)
@@ -47,13 +47,11 @@
                     selectedCurrencyPurchaseDate[selectedCurrency] = null;
                     selectedCurrencyPurchaseValue[selectedCurrency] = 0;
                 }
-
                 <MudItem Class="mb-16">
                     <MudItem Style="display:flex">
                         <img src="/images/flags/@CurrencyHelper.GetFlagImageName(rate.Code)" height="24" class="mr-1" />
                         <MudText Typo="Typo.body2" Class="pl-1">@($"{rate.Code} - {rate.Currency}")</MudText>
                     </MudItem>
-
                     <MudItem xs="6">
                         <MudDatePicker Label="Data zakupu"
                                          Clearable
@@ -62,24 +60,30 @@
                         <MudNumericField Label="Wartość zakupu (PLN)" 
                                          @bind-Value="@selectedCurrencyPurchaseValue[selectedCurrency]" Pattern="[0-9]" Clearable/>
                     </MudItem>
-
                      <MudText Class="d-flex align-start flex-grow-1 gap-4" xs="6">
                         @if (profitCalculated)
                         {
                             @if (profits.ContainsKey(selectedCurrency))
                             {
-                                @if (profits[selectedCurrency] >= 0)
+                                @if (selectedCurrencyPurchaseDate[selectedCurrency] == null)
                                 {
-                                        <MudAlert Severity="Severity.Success">Zysk: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
+                                    @if (!string.IsNullOrEmpty(errorMessage))
+                                    {
+                                        <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+                                    }
+                                }
+
+                                else if (profits[selectedCurrency] >= 0)
+                                {
+                                    <MudAlert Severity="Severity.Success">Zysk: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
                                 }
                                 else
                                 {
-                                        <MudAlert Severity="Severity.Error">Strata: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
-                                }                              
+                                    <MudAlert Severity="Severity.Error">Strata: @Math.Round(profits[selectedCurrency], 2)</MudAlert>
+                                }  
                             }
                         }
                     </MudText>
-
                 </MudItem>
             }
         }
@@ -104,26 +108,20 @@
             else
             {
                 <MudAlert Severity="Severity.Error">Całkowita strata: @totalProfit</MudAlert>
-            }
-       
+            }    
     }
 </MudText>
 
 @code {
-    private bool multiselectionTextChoice;
-    private IEnumerable<string> options { get; set; } = new HashSet<string>();
-
-    DateTime? purchaseDate = DateTime.Today;
-    decimal purchaseValue = 0;
-    private decimal profit = 0;
-
     private List<CurrencyRates> CurrencyRates = new List<CurrencyRates>();
     private List<Rate> Rates = new List<Rate>();
 
+    private IEnumerable<string> selectedRates { get; set; } = new HashSet<string>();
     private Dictionary<string, DateTime?> selectedCurrencyPurchaseDate = new Dictionary<string, DateTime?>();
     private Dictionary<string, decimal> selectedCurrencyPurchaseValue = new Dictionary<string, decimal>();
     private Dictionary<string, decimal> profits = new Dictionary<string, decimal>();
 
+    private decimal profit = 0;
     private bool profitCalculated = false;
 
     private string errorMessage = "";
@@ -143,9 +141,9 @@
         profits.Clear();
         profit = 0;
 
-        if (options.Any())
+        if (selectedRates.Any())
         {
-            foreach (var selectedCurrency in options)
+            foreach (var selectedCurrency in selectedRates)
             {
                 var purchaseDate = selectedCurrencyPurchaseDate[selectedCurrency];
                 var purchaseValue = selectedCurrencyPurchaseValue[selectedCurrency];
@@ -170,7 +168,7 @@
                     catch (HttpRequestException)
                     {
                         errorMessage = "Brak kursów dla podanej daty";
-                        return;
+                        continue;
                     }
 
                     var purchaseRate = exchangeRates?.Rates.FirstOrDefault()?.Mid;
@@ -182,7 +180,6 @@
                     var currentPurchaseValue = purchaseValue / purchaseRate.Value * currentRate.Value;
                     var profitLoss = currentPurchaseValue - purchaseValue;
 
-                    // zysk/strata do słownika dla każdej waluty
                     if (profits.ContainsKey(selectedCurrency))
                     {
                         profits[selectedCurrency] += profitLoss;
