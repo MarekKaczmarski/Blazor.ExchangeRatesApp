@@ -1,5 +1,6 @@
 ﻿@page "/currency-converter"
 
+@using Serilog
 @using CurrencyApplication.Client.Services
 @using CurrencyApplication.Client.Helpers
 @using CurrencyApplication.Models
@@ -124,33 +125,5 @@
         result = string.Empty;
         showResult = false;
     }
-
-    // private async Task<IEnumerable<string>> SearchCurrency(string text)
-    // {
-    //     if (currencies == null)
-    //     {
-    //         return new List<string>();
-    //     }
-
-    //     return await Task.FromResult(currencies
-    //         .SelectMany(cr => cr.Rates)
-    //         .Where(rate => rate.Code.Contains(text, StringComparison.InvariantCultureIgnoreCase))
-    //         .Select(rate => rate.Code));
-    // }
-
-    // private bool SearchItems(string value, string searchString)
-    // {
-    //     if (searchString == "")
-    //     {
-    //         return true;
-    //     }
-
-    //     if (value.StartsWith(searchString, StringComparison.CurrentCultureIgnoreCase))
-    //     {
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
 }
 
