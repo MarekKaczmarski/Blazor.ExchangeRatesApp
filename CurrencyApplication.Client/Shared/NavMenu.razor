@@ -1,39 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Aplikacja walutowa</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="currency-list" Match="NavLinkMatch.All">
-                <span class="bi bi-list-ul fs-2 mr-2" aria-hidden="true"></span> Waluty
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="currency-converter" Match="NavLinkMatch.All">
-                <span class="bi bi-currency-exchange fs-2 mr-2" aria-hidden="true"></span> Konwerter Walutowy
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="currency-profit" Match="NavLinkMatch.All">
-                <span class="bi bi-cash-coin fs-2 mr-2" aria-hidden="true"></span> Inwestycje Walutowe
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}
+﻿<MudPaper Width="250px" Class="d-inline-flex py-3" Elevation="0">
+    <MudNavMenu Class="mud-width-full">
+        <MudNavLink Href="/currency-list" Icon="@Icons.Material.Filled.FormatListBulleted">Waluty</MudNavLink>
+        <MudNavLink Href="/currency-converter" Icon="@Icons.Material.Filled.CurrencyExchange">Konwerter Walutowy</MudNavLink>
+        <MudNavLink Href="/currency-profit" Icon="@Icons.Material.Filled.Money">Inwestycje Walutowe</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
