@@ -19,5 +19,7 @@ namespace CurrencyApplication.Models
         [Display(Name = "EffectiveDate")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EffectiveDate { get; set; }
+
+        public decimal Change { get; set; } = decimal.Zero;
     }
 }

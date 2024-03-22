@@ -22,6 +22,12 @@
             @YTDPercentage.ToString("0.00")%
         </span>
     </h6>
+    <h6>
+        <span>Zmiana: </span>
+        <span style='color: @(Change < 0 ? "red" : "green")'>
+            @Change.ToString("0.00")%
+        </span>
+    </h6>
 
     <ApexChart TItem="Rate"
                Title="Historia Kursu"
@@ -97,6 +103,7 @@ else
     private ApexChart<Rate>? chart;
 
     private decimal YTDPercentage { get; set; }
+    private decimal Change { get; set; }
 
     private MudDateRangePicker? _picker;
     private DateRange? _dateRange;
@@ -108,6 +115,7 @@ else
     {
         await LoadRatesForYTD();
         await LoadRatesForPeriod(1);
+        await LoadChangesForRates();
         await base.OnInitializedAsync();
     }
 
@@ -230,6 +238,26 @@ else
         string formattedResult = ytdPercentage.ToString("0.00");
 
         return decimal.Parse(formattedResult);
+    }
+
+    private async Task LoadChangesForRates()
+    {
+        var startDateYTD = new DateTime(DateTime.Now.Year, 1, 1);
+        var endDateYTD = DateTime.Now;
+
+        var rates = await CurrencyService.GetCurrencyRatesInRange(Code, startDateYTD, endDateYTD);
+
+        if (rates == null || rates.Rates == null || rates.Rates.Count == 0)
+        {
+            return;
+        }
+
+        decimal firstValue = rates.Rates.First().Mid;
+        decimal secondValue = rates.Rates.Skip(1).First().Mid;
+
+        decimal rateChange = firstValue - secondValue;
+
+        Change = rateChange;
     }
 
     private void CloseErrorNotification()

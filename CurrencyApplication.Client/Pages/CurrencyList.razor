@@ -29,6 +29,7 @@
             <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Rate, object>(x=>x.Currency)">Nazwa waluty</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Code)">Kod waluty</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Mid)">Średni kurs</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Rate, object>(x=>x.Change)">Zmiana</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>
@@ -38,6 +39,7 @@
             </MudTd>
             <MudTd DataLabel="Code">@context.Code</MudTd>
             <MudTd DataLabel="Mid">@context.Mid</MudTd>
+            <MudTd DataLabel="Mid">@context.Change</MudTd>
         </RowTemplate>
     </MudTable>
     }
@@ -54,6 +56,7 @@
     {
         CurrencyRates = await CurrencyService.GetAllCurrenciesFromTables();
         Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
+
     }
 
     private bool FilterFunc1(Rate element) => FilterFunc(element, searchString);
