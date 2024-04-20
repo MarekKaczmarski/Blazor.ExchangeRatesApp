@@ -16,7 +16,10 @@ namespace CurrencyApplication.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             currencies = await CurrencyService.GetAllCurrenciesFromTablesWithPLN();
-            uniqueCurrencies = currencies.SelectMany(cr => cr.Rates).GroupBy(rate => rate.Code).Select(group => group.First());
+            uniqueCurrencies = currencies
+                .SelectMany(cr => cr.Rates)
+                .GroupBy(rate => rate.Code)
+                .Select(group => group.First());
         }
 
         private void ConvertCurrency()

@@ -45,12 +45,15 @@ namespace CurrencyApplication.Client.Pages
 
         private async Task LoadRatesForCustomPeriod()
         {
-            if (_dateRange != null && _dateRange.Start.HasValue && _dateRange.End.HasValue && _picker != null)
-            {
-                var startDate = _dateRange.Start.Value;
-                var endDate = _dateRange.End.Value;
-                await LoadRates(startDate, endDate);
-            }
+            if (_dateRange != null 
+                && _dateRange.Start.HasValue 
+                && _dateRange.End.HasValue 
+                && _picker != null)
+                {
+                    var startDate = _dateRange.Start.Value;
+                    var endDate = _dateRange.End.Value;
+                    await LoadRates(startDate, endDate);
+                }
         }
 
         private async Task LoadRates(DateTime startDate, DateTime endDate)

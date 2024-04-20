@@ -20,7 +20,9 @@ namespace CurrencyApplication.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             CurrencyRates = await CurrencyService.GetAllCurrenciesFromTables();
-            Rates = CurrencyRates.SelectMany(currencyRates => currencyRates.Rates).ToList();
+            Rates = CurrencyRates
+                .SelectMany(currencyRates => currencyRates.Rates)
+                .ToList();
         }
 
         private async Task CalculateProfit()
